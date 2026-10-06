@@ -180,6 +180,7 @@ input {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), var(--inset-2);
 }
 .menu--right { left: auto; right: 0; }
+.menu--up { top: auto; bottom: calc(100% + 8px); }
 .menu__title { padding: 4px 8px; }
 .menu__list { display: flex; flex-direction: column; gap: 2px; max-height: 260px; overflow-y: auto; }
 .menu__input {

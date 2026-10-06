@@ -8,12 +8,14 @@ import Icon from './Icon';
 interface Props {
   filters: Filters;
   onChange: (f: Filters) => void;
+  /** меню раскрывается вверх (когда панель фильтров внизу страницы) */
+  openUp?: boolean;
 }
 
 type MenuKey = FilterKey | 'saved' | null;
 
 /** Область поиска: фильтры по атрибутам и сохранённые области вместо длинного списка групп. */
-export default function FilterBar({ filters, onChange }: Props) {
+export default function FilterBar({ filters, onChange, openUp }: Props) {
   const [menu, setMenu] = useState<MenuKey>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const keys = Object.keys(FILTER_MENUS) as FilterKey[];
@@ -57,7 +59,7 @@ export default function FilterBar({ filters, onChange }: Props) {
       </div>
 
       {menu && (
-        <div className="card2 menu" role="menu">
+        <div className={`card2 menu${openUp ? ' menu--up' : ''}`} role="menu">
           <span className="t-b25 c3 menu__title">{menu === 'saved' ? 'Сохранённые области' : FILTER_MENUS[menu].title}</span>
           <div className="menu__list">
             {menu === 'saved' ? (
