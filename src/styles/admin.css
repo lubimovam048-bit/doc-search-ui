@@ -107,3 +107,43 @@ tr:hover .row-more, tr:focus-within .row-more { opacity: 0; }
 .tile--blue, .fact-card--blue { color: var(--er-color-text); }
 .tile--blue::after, .fact-card--blue::after { content: none; }
 .tile--blue.tile--btn, .tile--blue.tile--btn:hover { color: var(--er-color-text); }
+
+/* ---------- адаптив: файлы и окна ---------- */
+@media (max-width: 1100px) {
+  .tree { flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; }
+  .tree__item { flex: none; white-space: nowrap; background: #fff; box-shadow: 0 0 0 1px var(--er-color-divider); border-radius: var(--radius-pill); padding: 7px 14px; }
+  .tree__item--on { box-shadow: 0 0 0 1.5px var(--er-color-primary); color: var(--er-color-primary-hover); }
+  .tree__label { white-space: nowrap; }
+  .files { width: 100%; }
+  .files__table { width: 100%; }
+}
+
+@media (max-width: 720px) {
+  .page-head { gap: 12px; }
+  .search-box { flex: 1 1 100% !important; }
+  .notice--sm { flex-wrap: wrap; gap: 10px; }
+
+  /* таблица превращается в список карточек */
+  .files__table .table-wrap { overflow: visible; }
+  .files__table .table { min-width: 0 !important; }
+  .files__table .table thead { display: none; }
+  .files__table .table, .files__table .table tbody, .files__table .table tr, .files__table .table td { display: block; width: 100%; }
+  .files__table .table tr { position: relative; padding: 14px 16px; }
+  .files__table .table td { padding: 3px 0 !important; min-width: 0 !important; text-align: left !important; }
+  .files__table .table td:first-child { position: absolute; right: 12px; top: 12px; width: auto; padding: 0 !important; }
+  .files__table .table td:first-child + td { padding-right: 34px !important; }
+  .row-actions { min-width: 0; justify-content: flex-start; margin-top: 6px; }
+  .row-actions > button { opacity: 1 !important; pointer-events: auto !important; }
+  .row-more { display: none; }
+  .bulk { padding: 12px 16px; }
+  .pager { padding: 12px 16px; }
+
+  .review__row { grid-template-columns: 1fr; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--er-color-divider); }
+  .dialog { padding: 20px; }
+  .dialog__actions { flex-wrap: wrap; }
+  .sidepanel, .sidepanel--wide { width: 100%; }
+  .sidepanel__head, .sidepanel__body, .sidepanel__foot { padding-left: 16px; padding-right: 16px; }
+  .paper { padding: 20px; }
+  .toast { width: calc(100% - 32px); justify-content: space-between; bottom: 16px; }
+  .dropzone { inset: 68px 8px 8px; }
+}

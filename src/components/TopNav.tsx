@@ -4,7 +4,7 @@ import { FEATURES } from '../config';
 import { useApp } from '../context/AppContext';
 import Icon from './Icon';
 
-export default function TopNav() {
+export default function TopNav({ onHistory, historyOpen }: { onHistory?: () => void; historyOpen?: boolean }) {
   const { role, setRole } = useApp();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
@@ -40,6 +40,11 @@ export default function TopNav() {
         )}
       </nav>
 
+      {onHistory && (
+        <button className="btn-icon topnav__hist" onClick={onHistory} aria-label="История запросов" aria-expanded={historyOpen}>
+          <Icon name="clock" size={20} />
+        </button>
+      )}
       <div className="topnav__me" ref={ref}>
         <button className="me" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="menu">
           <span className="t-b25 c3 me__role">{isAdmin ? 'Администратор' : 'Пользователь'}</span>

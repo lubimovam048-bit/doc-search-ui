@@ -4,13 +4,13 @@ import { SCENARIOS } from '../data/scenarios';
 import Icon from './Icon';
 
 /** Левая панель экрана «Ассистент»: только история запросов. */
-export default function Sidebar() {
+export default function Sidebar({ open }: { open?: boolean }) {
   const { history, clearHistory } = useApp();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   return (
-    <aside className="sidebar" aria-label="История запросов">
+    <aside className={`sidebar${open ? ' sidebar--open' : ''}`} aria-label="История запросов">
       <div className="history">
         <span className="t-b3 c3 history__label">Мои запросы</span>
         {history.length === 0 ? (
