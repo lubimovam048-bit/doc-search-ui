@@ -7,7 +7,7 @@
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5173 (маршруты вида /#/q/...)
 npm run build      # проверка типов + сборка в dist/
 ```
 
