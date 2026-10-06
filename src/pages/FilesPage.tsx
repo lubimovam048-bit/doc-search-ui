@@ -4,7 +4,7 @@ import FilterRow, { type MenuDef } from '../components/FilterRow';
 import Icon from '../components/Icon';
 import SidePanel from '../components/SidePanel';
 import {
-  DOCUMENTS, DOC_FILTER_MENUS, DOC_STATUS, DOC_TYPES, NO_OBJECT, OBJECTS, suggestMeta, usedIn, type DocRow,
+  DOCUMENTS, DOC_FILTER_MENUS, DOC_STATUS, DOC_TYPES, OBJECTS, suggestMeta, usedIn, type DocRow,
 } from '../data/documents';
 
 type Key = 'type' | 'status';
@@ -19,7 +19,7 @@ interface Toast { text: string; undo?: () => void }
 
 const today = () => new Date().toLocaleDateString('ru-RU');
 const sizeText = (n: number) => `${(n / 1048576).toFixed(1).replace('.', ',')} МБ`;
-const needsAttention = (d: DocRow) => !d.trashed && (d.status === 'error' || d.object === NO_OBJECT);
+const needsAttention = (d: DocRow) => !d.trashed && d.status === 'error';
 
 export default function FilesPage() {
   const [docs, setDocs] = useState<DocRow[]>(DOCUMENTS);
@@ -122,7 +122,6 @@ export default function FilesPage() {
   const nodes: { id: string; label: string; count: number; warn?: boolean }[] = [
     { id: ALL, label: 'Все документы', count: live.length },
     ...OBJECTS.map((o) => ({ id: o, label: o, count: live.filter((d) => d.object === o).length })),
-    { id: NO_OBJECT, label: NO_OBJECT, count: live.filter((d) => d.object === NO_OBJECT).length, warn: true },
     { id: TRASH, label: 'Корзина', count: trashCount },
   ];
 
@@ -156,7 +155,7 @@ export default function FilesPage() {
         <div className="notice notice--sm" style={{ marginBottom: 0, alignItems: 'center', justifyContent: 'space-between' }}>
           <span className="hstack hstack--12" style={{ flexWrap: 'nowrap' }}>
             <Icon name="warn" color="var(--er-color-warning)" />
-            <span className="t-b25"><b>Требуют внимания: {attnCount}.</b> Ошибки чтения или не указан объект.</span>
+            <span className="t-b25"><b>Требуют внимания: {attnCount}.</b> Не удалось прочитать файлы.</span>
           </span>
           <button className="ghost t-btn2" aria-pressed={onlyAttn} onClick={() => setOnlyAttn((v) => !v)}>{onlyAttn ? 'Показать все' : 'Показать'}</button>
         </div>
@@ -211,7 +210,7 @@ export default function FilesPage() {
                       <td style={{ minWidth: 240 }}>
                         <div className="cell-stack"><span className="t-b2" style={{ fontWeight: 500 }}>{d.title}</span><span className="t-b3 c3">{d.meta}</span></div>
                       </td>
-                      <td><div className="cell-stack"><span className={`t-b25${d.object === NO_OBJECT ? ' c-orange' : ''}`}>{d.object}</span><span className="t-b3 c3">{d.type}</span></div></td>
+                      <td><div className="cell-stack"><span className="t-b25">{d.object}</span><span className="t-b3 c3">{d.type}</span></div></td>
                       <td style={{ whiteSpace: 'nowrap' }}><div className="cell-stack"><span className="t-b25">{d.date}</span><span className="t-b3 c3">{d.by}</span></div></td>
                       <td style={{ minWidth: 170 }}>
                         <div className="stack stack--8" style={{ alignItems: 'flex-start' }}>
@@ -267,21 +266,19 @@ export default function FilesPage() {
           actions={
             <>
               <button className="ghost t-btn2" onClick={() => setPending(null)}>Отмена</button>
-              <button className="btn-p t-btn2" disabled={pending.some((p) => !p.object || !p.type)} onClick={addPending}>Добавить</button>
+              <button className="btn-p t-btn2" onClick={addPending}>Добавить</button>
             </>
           }
         >
-          <span className="t-b25 c3">Система предложила объект и тип по названию. Проверьте и при необходимости исправьте.</span>
+          <span className="t-b25 c3">Система предложила объект и тип по названию. Привязывать документ к объекту необязательно: выберите «Без привязки к объекту».</span>
           <div className="review">
             {pending.map((p, i) => (
               <div key={i} className="review__row">
                 <span className="t-b25 review__name" title={p.file.name}>{p.file.name}</span>
                 <select className="select t-b25" aria-label={`Объект: ${p.file.name}`} value={p.object} onChange={(e) => setPending((all) => all!.map((x, j) => (j === i ? { ...x, object: e.target.value } : x)))}>
-                  <option value="">Выберите объект</option>
                   {OBJECTS.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
                 <select className="select t-b25" aria-label={`Тип: ${p.file.name}`} value={p.type} onChange={(e) => setPending((all) => all!.map((x, j) => (j === i ? { ...x, type: e.target.value } : x)))}>
-                  <option value="">Выберите тип</option>
                   {DOC_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>

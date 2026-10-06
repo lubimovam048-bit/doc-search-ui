@@ -45,13 +45,14 @@
 .btn-link--danger { color: var(--er-color-danger); }
 .btn-link--danger:hover { color: #8f2c3f; }
 .check { width: 18px; height: 18px; accent-color: var(--er-color-primary); cursor: pointer; }
-.select { height: 36px; padding: 0 12px; border-radius: var(--radius-sm); border: 1px solid var(--er-color-border-strong); background: var(--er-color-surface); color: var(--er-color-text); font-family: inherit; }
+.select { appearance: none; -webkit-appearance: none; height: 38px; padding: 0 36px 0 14px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234b607c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; text-overflow: ellipsis; border-radius: var(--radius-sm); border: 1px solid var(--er-color-border-strong); background-color: var(--er-color-surface); color: var(--er-color-text); font-family: inherit; }
 .pager { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-top: 1px solid var(--er-color-divider); }
 .ghost:disabled, .btn-p:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 .dropzone { position: fixed; inset: 76px 16px 16px; z-index: 40; display: flex; align-items: center; justify-content: center; border: 2px dashed var(--er-color-primary); border-radius: var(--radius-xl); background: rgba(232, 241, 255, 0.92); color: var(--er-color-primary-hover); font-size: 20px; font-weight: 600; pointer-events: none; }
 
-.review { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; margin-top: 8px; }
-.review__row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
+.review { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; margin: 8px -6px 0; padding: 6px; }
+.select:focus-visible { outline-offset: 0; }
+.review__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr); gap: 8px; align-items: center; }
 .review__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* плитки журнала как фильтры */

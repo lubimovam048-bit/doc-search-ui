@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import Cite from '../components/Cite';
-import ScopeControl from '../components/ScopeControl';
 import Icon from '../components/Icon';
 import SearchField from '../components/SearchField';
 import { useApp } from '../context/AppContext';
@@ -105,7 +104,6 @@ export default function AnswerPage() {
 
         <div className="composer">
           <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} />
-          <ScopeControl filters={filters} onChange={setFilters} />
           <span className="t-cap1 c3 composer__note">Запросы сохраняются и доступны администратору.</span>
         </div>
       </main>
