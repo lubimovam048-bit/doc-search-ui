@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import AnswerPage from './pages/AnswerPage';
 import FilesPage from './pages/FilesPage';
 import JournalPage from './pages/JournalPage';
+import { FEATURES } from './config';
 import { useApp } from './context/AppContext';
 import type { ReactElement } from 'react';
 
@@ -21,7 +22,7 @@ export default function App() {
         <Route path="q/:id" element={<AnswerPage />} />
         <Route path="files" element={<AdminOnly><FilesPage /></AdminOnly>} />
         <Route path="documents" element={<Navigate to="/files" replace />} />
-        <Route path="journal" element={<AdminOnly><JournalPage /></AdminOnly>} />
+        {FEATURES.journal && <Route path="journal" element={<AdminOnly><JournalPage /></AdminOnly>} />}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

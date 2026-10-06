@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { FEATURES } from '../config';
 import { useApp } from '../context/AppContext';
 import Icon from './Icon';
 
@@ -34,7 +35,7 @@ export default function TopNav() {
         {isAdmin && (
           <>
             <NavLink to="/files" className={tab}>Файлы</NavLink>
-            <NavLink to="/journal" className={tab}>Журнал</NavLink>
+            {FEATURES.journal && <NavLink to="/journal" className={tab}>Журнал</NavLink>}
           </>
         )}
       </nav>
