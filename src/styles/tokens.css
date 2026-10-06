@@ -1,0 +1,42 @@
+/* Дизайн-токены. Глубина задаётся светлотой заливок, а не рамками. */
+:root {
+  /* цвета DS */
+  --grey-100: #0d0f11;
+  --grey-90: #191d23;
+  --grey-80: #292a2e;
+  --green: #2ab4ae;
+  --mint: #7debd4;
+  --blue: #2b7a98;
+  --blue-line: #4a82b8;
+  --orange: #ff8a00;
+  --red: #ff4d4d;
+  --violet: #7b57e0;
+
+  /* текст: белый только для ключевого */
+  --text-1: #ffffff;
+  --text-2: #b8c0cc;
+  --text-3: #999ea7;
+
+  /* поверхности */
+  --bg-radial: radial-gradient(120% 90% at 15% 0%, #171a29 0%, #0d0f11 100%);
+  --card-1: linear-gradient(180deg, rgba(26, 36, 54, 0.78) 0%, rgba(14, 20, 32, 0.88) 100%);
+  --card-2: linear-gradient(180deg, rgba(37, 47, 69, 0.92) 0%, rgba(27, 34, 52, 0.92) 100%);
+  --edge: rgba(255, 255, 255, 0.07);
+  --edge-2: rgba(255, 255, 255, 0.09);
+  --inset-1: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --inset-2: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --control-edge: rgba(184, 192, 204, 0.45); /* интерактивные границы ≥ 3:1 */
+  --divider: rgba(255, 255, 255, 0.07);
+
+  /* акцентные заливки */
+  --teal-a10: rgba(42, 180, 174, 0.1);
+  --teal-a14: rgba(42, 180, 174, 0.14);
+  --teal-a28: rgba(42, 180, 174, 0.28);
+  --teal-line: rgba(42, 180, 174, 0.6);
+  --progress: linear-gradient(90deg, #2b7a98 0%, #2ab4ae 60%, #7debd4 100%);
+
+  --radius-card-1: 16px;
+  --radius-card-2: 12px;
+  --radius-control: 8px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
