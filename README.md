@@ -13,7 +13,7 @@ npm run build      # проверка типов + сборка в dist/
 
 ## Стек
 
-React 18, TypeScript, Vite, React Router. Стили: обычный CSS с токенами (`src/styles`), шрифт Jost.
+React 18, TypeScript, Vite, React Router. Стили: обычный CSS с токенами (`src/styles`), шрифт Inter (SIL OFL 1.1, лежит в `src/assets/fonts`, лицензия рядом). Светлая тема, верхняя навигация.
 
 ## Структура
 

@@ -62,7 +62,7 @@ export default function FilterRow<K extends string>({ menus, onChange, extra, al
               return (
                 <button key={o} className={`menu__item${sel ? ' menu__item--on' : ''}`} onClick={() => { onChange(current.key, o); setOpen(null); }}>
                   <span>{o}</span>
-                  {sel && <Icon name="check" size={16} stroke={2} color="var(--green)" />}
+                  {sel && <Icon name="check" size={16} stroke={2} color="var(--er-color-primary)" />}
                 </button>
               );
             })}

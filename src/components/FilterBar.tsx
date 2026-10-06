@@ -77,7 +77,7 @@ export default function FilterBar({ filters, onChange, openUp }: Props) {
                 return (
                   <button key={o} className={`menu__item${sel ? ' menu__item--on' : ''}`} onClick={() => { onChange({ ...filters, [menu]: o }); setMenu(null); }}>
                     <span>{o}</span>
-                    {sel && <Icon name="check" size={16} stroke={2} color="var(--green)" />}
+                    {sel && <Icon name="check" size={16} stroke={2} color="var(--er-color-primary)" />}
                   </button>
                 );
               })

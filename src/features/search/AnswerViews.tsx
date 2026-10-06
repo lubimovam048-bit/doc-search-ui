@@ -49,7 +49,7 @@ export function SummaryAnswer({ deleted, cite }: { deleted: boolean; cite: Rende
     <div className="answer">
       {deleted && (
         <div className="card2 notice">
-          <Icon name="warn" size={20} color="var(--orange)" />
+          <Icon name="warn" size={20} color="var(--er-color-warning)" />
           <div className="stack stack--8">
             <span className="t-sub3 c-orange">Один из источников удалён</span>
             <span className="t-blog c2">
@@ -81,7 +81,7 @@ export function SummaryAnswer({ deleted, cite }: { deleted: boolean; cite: Rende
 export function TableAnswer({ cite }: { cite: RenderCite }) {
   return (
     <div className="answer answer--gap16">
-      <div className="card1 fact-card rise">
+      <div className="card1 fact-card fact-card--blue rise">
         <div className="stack stack--8">
           <span className="t-b25 c3">Ответственный за устройство перронов</span>
           <span className="t-h3 c1">Соколов Андрей Петрович</span>
@@ -105,9 +105,9 @@ export function TableAnswer({ cite }: { cite: RenderCite }) {
 /* 4. Статус объекта: только числа, которые есть в документах, и со ссылками */
 export function StatusAnswer({ cite }: { cite: RenderCite }) {
   const rows = [
-    { label: 'Согласование', chip: 'Согласовано', color: 'var(--green)', text: 'Рабочая документация согласована, положительное заключение экспертизы получено 19.08.2026.', id: 's_expert', cl: 'Заключение экспертизы, стр. 1' },
-    { label: 'Что строится сейчас', chip: 'В работе', color: 'var(--orange)', text: 'Монолитные работы 1-го этажа выполнены на 65 %. Монтаж каркаса перрона запланирован на 20.10.2026.', id: 's_rep5', cl: 'Отчёт за сентябрь 2026, стр. 5' },
-    { label: 'Проблемы и риски', chip: 'Есть риск', color: 'var(--red)', text: 'Поставка металлоконструкций сдвинулась на 15 дней. Влияние на критический путь оценивается как умеренное.', id: 's_rep7', cl: 'Отчёт за сентябрь 2026, стр. 7' },
+    { label: 'Согласование', chip: 'Согласовано', color: 'var(--er-color-success)', text: 'Рабочая документация согласована, положительное заключение экспертизы получено 19.08.2026.', id: 's_expert', cl: 'Заключение экспертизы, стр. 1' },
+    { label: 'Что строится сейчас', chip: 'В работе', color: 'var(--er-color-warning)', text: 'Монолитные работы 1-го этажа выполнены на 65 %. Монтаж каркаса перрона запланирован на 20.10.2026.', id: 's_rep5', cl: 'Отчёт за сентябрь 2026, стр. 5' },
+    { label: 'Проблемы и риски', chip: 'Есть риск', color: 'var(--er-color-danger)', text: 'Поставка металлоконструкций сдвинулась на 15 дней. Влияние на критический путь оценивается как умеренное.', id: 's_rep7', cl: 'Отчёт за сентябрь 2026, стр. 7' },
   ];
   return (
     <div className="answer answer--gap20">
@@ -116,15 +116,15 @@ export function StatusAnswer({ cite }: { cite: RenderCite }) {
         <div className="stack stack--8">
           <span className="t-sub1 c1">Вокзальный комплекс ст. Заречная</span>
           <span className="t-b2 c3 hstack hstack--8" style={{ flexWrap: 'nowrap' }}>
-            <Icon name="circleCheck" size={18} stroke={1.8} color="var(--green)" />
+            <Icon name="circleCheck" size={18} stroke={1.8} color="var(--er-color-success)" />
             По документам на 03.10.2026
           </span>
         </div>
       </div>
 
-      <div className="card1 fact-card rise">
+      <div className="card1 fact-card fact-card--blue rise">
         <div className="stack stack--8">
-          <span className="t-b25 c3">Общая готовность</span>
+          <span className="t-b25">Общая готовность</span>
           <span className="t-h1 c1">70%</span>
         </div>
         <div className="progress progress--lg" role="progressbar" aria-valuenow={70} aria-valuemin={0} aria-valuemax={100}>
@@ -133,9 +133,9 @@ export function StatusAnswer({ cite }: { cite: RenderCite }) {
         </div>
         <div className="hstack hstack--16" style={{ justifyContent: 'space-between' }}>
           <span className="hstack" style={{ alignItems: 'baseline', gap: 10 }}>
-            <span style={{ fontSize: 32, lineHeight: '36px', color: '#fff' }}>4</span>
+            <span style={{ fontSize: 28, lineHeight: '34px', fontWeight: 700 }}>4</span>
             <span className="t-b2 c3">из</span>
-            <span style={{ fontSize: 32, lineHeight: '36px', color: '#fff' }}>6</span>
+            <span style={{ fontSize: 28, lineHeight: '34px', fontWeight: 700 }}>6</span>
             <span className="t-b1 c3">этапов завершены</span>
           </span>
           {cite('s_rep3', 'Отчёт за сентябрь 2026, стр. 3')}

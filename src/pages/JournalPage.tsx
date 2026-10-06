@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import SidePanel from '../components/SidePanel';
 import FilterRow, { type MenuDef } from '../components/FilterRow';
 import { GAPS, JOURNAL_FILTERS, LOG, TILES, type LogRow } from '../data/journal';
 
@@ -7,10 +9,13 @@ type Key = keyof typeof JOURNAL_FILTERS;
 const INITIAL: Record<Key, string> = {
   period: 'Период: 30 дней', user: 'Все пользователи', type: 'Все типы ответа', scope: 'Все области',
 };
-const TONE: Record<LogRow['tone'], string> = { ok: 'var(--green)', warn: 'var(--orange)', bad: 'var(--red)' };
+const TONE: Record<LogRow['tone'], string> = { ok: 'var(--er-color-success)', warn: 'var(--er-color-warning)', bad: 'var(--er-color-danger)' };
 
 export default function JournalPage() {
+  const navigate = useNavigate();
   const [f, setF] = useState(INITIAL);
+  const [onlySrc, setOnlySrc] = useState(false);
+  const [open, setOpen] = useState<LogRow | null>(null);
   const [onlyEmpty, setOnlyEmpty] = useState(false);
   const [onlyDiv, setOnlyDiv] = useState(false);
 
@@ -27,11 +32,12 @@ export default function JournalPage() {
       LOG.filter((r) => {
         if (onlyEmpty && !r.empty) return false;
         if (onlyDiv && !r.divergence) return false;
+        if (onlySrc && r.rating !== 'Источник не тот') return false;
         if (f.user !== INITIAL.user && r.user !== f.user) return false;
         if (f.type !== INITIAL.type && r.result !== f.type) return false;
         return true;
       }),
-    [f, onlyEmpty, onlyDiv],
+    [f, onlyEmpty, onlyDiv, onlySrc],
   );
 
   return (
@@ -39,19 +45,27 @@ export default function JournalPage() {
       <div className="page-head">
         <div className="stack stack--8">
           <h1 className="t-h3 c1" style={{ margin: 0 }}>Журнал запросов</h1>
-          <span className="t-b25 c3">Администратор видит все запросы. Пользователь видит только свои.</span>
+          <span className="t-b25 c3">Нажмите на цифру, чтобы отфильтровать. Нажмите на строку, чтобы увидеть ответ.</span>
         </div>
         <button className="ghost t-btn2">Выгрузить журнал</button>
       </div>
 
       <div className="tiles">
-        {TILES.map((t) => (
-          <div key={t.label} className="card1 tile rise">
-            <span className="t-b25 c3">{t.label}</span>
-            <span className="t-h1" style={{ color: t.color }}>{t.value}</span>
-            <span className="t-cap1 c3">{t.note}</span>
-          </div>
-        ))}
+        {TILES.map((t, i) => {
+          const on = i === 1 ? onlyEmpty : i === 2 ? onlyDiv : i === 3 ? onlySrc : !onlyEmpty && !onlyDiv && !onlySrc;
+          const apply = () => {
+            setOnlyEmpty(i === 1 ? !onlyEmpty : false);
+            setOnlyDiv(i === 2 ? !onlyDiv : false);
+            setOnlySrc(i === 3 ? !onlySrc : false);
+          };
+          return (
+            <button key={t.label} className={`card1 tile tile--btn rise${i < 2 ? ' tile--blue' : ''}${on && i > 0 ? ' tile--on' : ''}`} aria-pressed={i > 0 ? on : undefined} onClick={apply}>
+              <span className="t-b25 c3">{t.label}</span>
+              <span className="t-h1" style={i < 2 ? undefined : { color: t.color }}>{t.value}</span>
+              <span className="t-cap1 c3">{t.note}</span>
+            </button>
+          );
+        })}
       </div>
 
       <FilterRow
@@ -59,10 +73,6 @@ export default function JournalPage() {
         onChange={(k, v) => setF((s) => ({ ...s, [k]: v }))}
         extra={null}
       />
-      <div className="hstack hstack--8" style={{ marginTop: -12 }}>
-        <button className={`pill${onlyEmpty ? ' pill--active' : ''}`} aria-pressed={onlyEmpty} onClick={() => setOnlyEmpty((v) => !v)}>Только без ответа</button>
-        <button className={`pill${onlyDiv ? ' pill--active' : ''}`} aria-pressed={onlyDiv} onClick={() => setOnlyDiv((v) => !v)}>Только с расхождением</button>
-      </div>
 
       <div className="card1 table-wrap">
         <table className="table" style={{ minWidth: 900 }}>
@@ -71,7 +81,7 @@ export default function JournalPage() {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id}>
+              <tr key={r.id} className="tr--click" tabIndex={0} onClick={() => setOpen(r)} onKeyDown={(e) => e.key === 'Enter' && setOpen(r)}>
                 <td className="t-b25 c3" style={{ whiteSpace: 'nowrap' }}>{r.time}</td>
                 <td className="t-b25 c2" style={{ whiteSpace: 'nowrap' }}>{r.user}</td>
                 <td className="t-b2 c1" style={{ minWidth: 280 }}>{r.query}</td>
@@ -79,7 +89,7 @@ export default function JournalPage() {
                 <td>
                   <div className="cell-stack">
                     <span className="t-b25 c2">{r.sources}</span>
-                    <span className="t-b3" style={{ color: r.sourceNoteTone === 'bad' ? 'var(--red)' : 'var(--text-3)' }}>{r.sourceNote}</span>
+                    <span className="t-b3" style={{ color: r.sourceNoteTone === 'bad' ? 'var(--er-color-danger)' : 'var(--er-color-muted)' }}>{r.sourceNote}</span>
                   </div>
                 </td>
                 <td className="t-b25 c3">{r.rating}</td>
@@ -91,6 +101,33 @@ export default function JournalPage() {
           <div className="empty-state"><span className="t-sub3 c1">Нет запросов по выбранным условиям</span></div>
         )}
       </div>
+
+      {open && (
+        <SidePanel
+          title={open.query}
+          subtitle={`${open.user} · ${open.time}`}
+          onClose={() => setOpen(null)}
+          footer={open.empty ? <button className="btn-p t-btn2" onClick={() => navigate('/files')}>Загрузить недостающий документ</button> : undefined}
+        >
+          <div className="stack stack--16">
+            <div className="hstack hstack--12">
+              <span className="status" style={{ color: TONE[open.tone] }}><span className="dot" style={{ background: TONE[open.tone] }} />{open.result}</span>
+              <span className="t-b25 c3">Оценка: {open.rating}</span>
+            </div>
+            <div className="stack stack--8">
+              <span className="t-b3 c3">Ответ пользователю</span>
+              <span className="t-blog">{open.answer}</span>
+            </div>
+            <div className="stack stack--8">
+              <span className="t-b3 c3">Источники</span>
+              {open.docs.length === 0 ? <span className="t-b25 c3">Источников нет</span> : open.docs.map((d, i) => (
+                <span key={d} className="hstack hstack--8 t-b25" style={{ flexWrap: 'nowrap' }}><span className="cn">{i + 1}</span>{d}</span>
+              ))}
+            </div>
+            <span className="t-b25 c3">{open.sourceNote}</span>
+          </div>
+        </SidePanel>
+      )}
 
       <div className="card1 stack stack--8" style={{ padding: 28 }}>
         <div className="hstack hstack--12" style={{ justifyContent: 'space-between', paddingBottom: 12 }}>

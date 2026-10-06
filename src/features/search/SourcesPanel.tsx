@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import Icon from '../../components/Icon';
+import SidePanel from '../../components/SidePanel';
 import { RESP_TABLE } from '../../data/sources';
 import type { Source } from '../../data/types';
 
@@ -11,8 +13,10 @@ interface Props {
 }
 
 export default function SourcesPanel({ sources, openId, onToggle, onCollapseAll, onClose }: Props) {
+  const [viewId, setViewId] = useState<string | null>(null);
+  const viewing = sources.find((x) => x.id === viewId) ?? null;
   return (
-    <section aria-label="Источники" className="card1 sources">
+    <section aria-label="Источники" className="sources">
       <div className="sources__head">
         <span className="t-sub3 c1">Источники <span className="c3" style={{ fontWeight: 400 }}>· {sources.length}</span></span>
         <div className="hstack" style={{ gap: 4 }}>
@@ -37,10 +41,10 @@ export default function SourcesPanel({ sources, openId, onToggle, onCollapseAll,
               <button className="src__head" onClick={() => onToggle(s.id)} aria-expanded={open}>
                 <span className={`cn${del ? ' cn--del' : open ? ' cn--on' : ''}`}>{i + 1}</span>
                 <span className="src__title">
-                  <span className="t-b2" style={{ color: open ? '#fff' : 'var(--text-2)' }}>{s.title}</span>
+                  <span className="t-b2" style={{ color: open ? 'var(--er-color-primary-hover)' : 'var(--er-color-text)', fontWeight: open ? 600 : undefined }}>{s.title}</span>
                   <span className="t-b3 c3">{s.meta}</span>
                 </span>
-                <Icon name="chevDown" size={16} stroke={1.8} color="var(--text-3)" className={`src__chev${open ? ' src__chev--open' : ''}`} />
+                <Icon name="chevDown" size={16} stroke={1.8} color="var(--er-color-muted)" className={`src__chev${open ? ' src__chev--open' : ''}`} />
               </button>
 
               {open && s.kind === 'text' && (
@@ -49,8 +53,7 @@ export default function SourcesPanel({ sources, openId, onToggle, onCollapseAll,
                   <div className="src__frag"><span className="t-blog c1">{s.frag}</span></div>
                   <span className="t-blog c3">{s.after}</span>
                   <div className="hstack hstack--8">
-                    <button className="ghost t-btn2">Открыть в читалке</button>
-                    <button className="ghost t-btn2">Копировать ссылку</button>
+                    <button className="ghost t-btn2" onClick={() => setViewId(s.id)}>Открыть документ</button>
                   </div>
                 </div>
               )}
@@ -77,6 +80,7 @@ export default function SourcesPanel({ sources, openId, onToggle, onCollapseAll,
                     </table>
                   </div>
                   <span className="t-cap1 c3">Выделена строка, на которой основан ответ. Заголовки столбцов показаны для проверки.</span>
+                  <div><button className="ghost t-btn2" onClick={() => setViewId(s.id)}>Открыть документ</button></div>
                 </div>
               )}
 
@@ -93,6 +97,39 @@ export default function SourcesPanel({ sources, openId, onToggle, onCollapseAll,
           );
         })}
       </div>
+    
+      {viewing && (
+        <SidePanel wide title={viewing.title} subtitle={viewing.meta} onClose={() => setViewId(null)}>
+          <div className="paper">
+            {viewing.kind === 'text' && (
+              <>
+                <span className="paper__line" /><span className="paper__line paper__line--s" />
+                <p className="t-blog c3">{viewing.before}</p>
+                <p className="t-blog paper__mark">{viewing.frag}</p>
+                <p className="t-blog c3">{viewing.after}</p>
+                <span className="paper__line" /><span className="paper__line paper__line--s" />
+              </>
+            )}
+            {viewing.kind === 'table' && (
+              <div className="src__table">
+                <table>
+                  <thead><tr>{RESP_TABLE.head.map((h) => <th key={h} className="t-btn2 c2">{h}</th>)}</tr></thead>
+                  <tbody>
+                    {RESP_TABLE.rows.map((r) => (
+                      <tr key={r.work} className={r.hl ? 'hl' : ''}>
+                        <td className="t-b25">{r.work}</td>
+                        <td className="t-b25">{r.hl ? <span className="cell-mark">{r.who}</span> : r.who}</td>
+                        <td className="t-b25">{r.control}</td>
+                        <td className="t-b25">{r.due}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </SidePanel>
+      )}
     </section>
   );
 }

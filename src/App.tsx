@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AppShell from './components/AppShell';
 import HomePage from './pages/HomePage';
 import AnswerPage from './pages/AnswerPage';
-import DocumentsPage from './pages/DocumentsPage';
+import FilesPage from './pages/FilesPage';
 import JournalPage from './pages/JournalPage';
 import { useApp } from './context/AppContext';
 import type { ReactElement } from 'react';
@@ -19,7 +19,8 @@ export default function App() {
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
         <Route path="q/:id" element={<AnswerPage />} />
-        <Route path="documents" element={<AdminOnly><DocumentsPage /></AdminOnly>} />
+        <Route path="files" element={<AdminOnly><FilesPage /></AdminOnly>} />
+        <Route path="documents" element={<Navigate to="/files" replace />} />
         <Route path="journal" element={<AdminOnly><JournalPage /></AdminOnly>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

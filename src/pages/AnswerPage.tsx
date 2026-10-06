@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import Cite from '../components/Cite';
-import FilterBar from '../components/FilterBar';
+import ScopeControl from '../components/ScopeControl';
 import Icon from '../components/Icon';
 import SearchField from '../components/SearchField';
 import { useApp } from '../context/AppContext';
@@ -97,15 +97,15 @@ export default function AnswerPage() {
               <span className="t-b25 c3" style={{ marginRight: 4 }}>Оценить ответ</span>
               <button className="ghost t-btn2" onClick={() => setFeedback('ok')}>Полезно</button>
               <button className="ghost t-btn2" onClick={() => setFeedback('bad')}>Неточно</button>
-              <button className="ghost t-btn2" onClick={() => setFeedback('src')}>Источник не тот</button>
+              <button className="btn-text t-btn2" onClick={() => setFeedback('src')}>Источник не тот</button>
             </>
           )}
           {feedback && <span className="t-b25 cg" role="status">{FEEDBACK_TEXT[feedback]}</span>}
         </div>
 
         <div className="composer">
-          <FilterBar filters={filters} onChange={setFilters} openUp />
           <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} />
+          <ScopeControl filters={filters} onChange={setFilters} />
           <span className="t-cap1 c3 composer__note">Запросы сохраняются и доступны администратору.</span>
         </div>
       </main>

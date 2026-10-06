@@ -42,9 +42,9 @@ export default function SearchField({ onSubmit, autoFocus }: Props) {
 
   return (
     <div className="search-wrap">
-      <form className={`card1 search${thinking ? ' search--thinking' : ''}`} onSubmit={submit} role="search" aria-busy={thinking}>
+      <form className={`search${thinking ? ' search--thinking' : ''}`} onSubmit={submit} role="search" aria-busy={thinking}>
         <div className="search__content" aria-hidden={thinking}>
-          <Icon name="search" size={20} color="var(--text-3)" />
+          <Icon name="search" size={20} color="var(--er-color-subtle)" />
           <div className="search__field">
             <input
               className="search__input t-b1"
