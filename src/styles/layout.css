@@ -2,7 +2,7 @@
 .app {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  overflow: clip; /* clip, а не hidden: иначе не работает sticky у поля запроса */
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
@@ -58,6 +58,11 @@
   border-radius: 0;
   border-width: 0 1px 0 0;
   transition: flex-basis 0.35s var(--ease);
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
 }
 .sidebar--rail { flex-basis: 68px; align-items: center; }
 
@@ -262,3 +267,17 @@
 
 .search__status { min-height: 16px; opacity: 0; transition: opacity 0.4s ease 0.3s; }
 .search__status--on { opacity: 1; }
+
+/* ---------- поле запроса внизу страницы ответа (как в ИИ-ассистентах) ---------- */
+.composer {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px 0 20px;
+  background: linear-gradient(180deg, rgba(13, 15, 17, 0) 0, #0d0f11 30px);
+}
+.composer__note { text-align: center; }

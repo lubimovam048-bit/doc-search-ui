@@ -79,12 +79,6 @@ export default function AnswerPage() {
           </div>
         )}
 
-        <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} />
-        <FilterBar filters={filters} onChange={setFilters} />
-        <span className="t-cap1 c3" style={{ marginTop: -8 }}>
-          Запрос понят как: {scenario.understood} · Запросы сохраняются и доступны администратору.
-        </span>
-
         <div className="stack stack--4" style={{ paddingTop: 8 }}>
           <span className="t-cap1 c3">Вопрос</span>
           <span className="t-sub2 c1">{entry.query}</span>
@@ -93,6 +87,7 @@ export default function AnswerPage() {
           <span className="t-b25 c2">{scenario.type}</span>
           {scenario.asOf && <span className="t-b25 c3">· {scenario.asOf}</span>}
         </div>
+        <span className="t-cap1 c3" style={{ marginTop: -8 }}>Запрос понят как: {scenario.understood}</span>
 
         {view}
 
@@ -106,6 +101,12 @@ export default function AnswerPage() {
             </>
           )}
           {feedback && <span className="t-b25 cg" role="status">{FEEDBACK_TEXT[feedback]}</span>}
+        </div>
+
+        <div className="composer">
+          <FilterBar filters={filters} onChange={setFilters} openUp />
+          <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} />
+          <span className="t-cap1 c3 composer__note">Запросы сохраняются и доступны администратору.</span>
         </div>
       </main>
 
