@@ -87,3 +87,23 @@
 
 .files__table .table th, .files__table .table td { padding-left: 14px; padding-right: 14px; }
 .tile--blue.tile--btn, .tile--blue.tile--btn:hover { color: #fff; }
+
+/* ---------- спокойная таблица файлов ---------- */
+.tree { background: transparent; border: 0; box-shadow: none; padding: 0; }
+.tree__item--on { background: #fff; box-shadow: 0 0 0 1px var(--er-color-divider); color: var(--er-color-text); font-weight: 600; }
+.tree__item:hover { background: rgba(255, 255, 255, 0.7); }
+.files__table { border-radius: var(--radius-lg); }
+.files__table .table td { padding-top: 15px; padding-bottom: 15px; }
+.files__table .table tbody tr:hover { background: #fafcff; }
+.row-actions { position: relative; min-width: 190px; }
+.row-actions > .btn-link, .row-actions > button { opacity: 0; pointer-events: none; transition: opacity var(--t-response); font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 8px; background: #eef3fe; }
+.row-actions > .btn-link--danger { background: var(--er-color-danger-soft); }
+.row-more { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); color: var(--er-color-subtle); letter-spacing: 2px; font-weight: 700; transition: opacity var(--t-response); }
+tr:hover .row-actions > button, tr:focus-within .row-actions > button { opacity: 1; pointer-events: auto; }
+tr:hover .row-more, tr:focus-within .row-more { opacity: 0; }
+@media (hover: none) { .row-actions > button { opacity: 1; pointer-events: auto; } .row-more { display: none; } }
+.search-box { border-radius: var(--radius-sm); border-color: var(--er-color-border); }
+.select { border-radius: var(--radius-sm); }
+.tile--blue, .fact-card--blue { color: var(--er-color-text); }
+.tile--blue::after, .fact-card--blue::after { content: none; }
+.tile--blue.tile--btn, .tile--blue.tile--btn:hover { color: var(--er-color-text); }

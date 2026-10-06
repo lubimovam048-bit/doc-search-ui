@@ -214,13 +214,14 @@ export default function FilesPage() {
                       <td style={{ whiteSpace: 'nowrap' }}><div className="cell-stack"><span className="t-b25">{d.date}</span><span className="t-b3 c3">{d.by}</span></div></td>
                       <td style={{ minWidth: 170 }}>
                         <div className="stack stack--8" style={{ alignItems: 'flex-start' }}>
-                          <span className="status" style={{ color: st.color }}><span className="dot" style={{ background: st.color }} />{st.label}</span>
+                          <span className="status status--quiet"><span className="dot" style={{ background: st.color }} />{st.label}</span>
                           {d.progress !== undefined && <div className="progress progress--sm"><div className="progress__bar" style={{ width: `${d.progress}%` }} /></div>}
                           {d.note && <span className="t-b3 c3">{d.note}</span>}
                         </div>
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <div className="row-actions">
+                          <span className="row-more" aria-hidden="true">···</span>
                           {d.trashed ? (
                             <button className="btn-link t-b25" onClick={() => patch([d.id], { trashed: false })}>Восстановить</button>
                           ) : (

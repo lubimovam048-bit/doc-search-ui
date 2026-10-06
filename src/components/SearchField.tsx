@@ -63,7 +63,7 @@ export default function SearchField({ onSubmit, autoFocus }: Props) {
               {(focused || hint) && <span className="search__caret" />}
             </div>
           </div>
-          <button type="submit" className="btn-p t-btn2" tabIndex={thinking ? -1 : 0}>Найти</button>
+          <button type="submit" className="btn-p t-btn2" tabIndex={thinking ? -1 : 0}>Найти<Icon name="arrow" size={16} stroke={2} /></button>
         </div>
         <div className="orb" aria-hidden="true" />
       </form>

@@ -81,7 +81,7 @@ export function SummaryAnswer({ deleted, cite }: { deleted: boolean; cite: Rende
 export function TableAnswer({ cite }: { cite: RenderCite }) {
   return (
     <div className="answer answer--gap16">
-      <div className="card1 fact-card fact-card--blue rise">
+      <div className="card1 fact-card rise">
         <div className="stack stack--8">
           <span className="t-b25 c3">Ответственный за устройство перронов</span>
           <span className="t-h3 c1">Соколов Андрей Петрович</span>
@@ -122,23 +122,20 @@ export function StatusAnswer({ cite }: { cite: RenderCite }) {
         </div>
       </div>
 
-      <div className="card1 fact-card fact-card--blue rise">
-        <div className="stack stack--8">
-          <span className="t-b25">Общая готовность</span>
-          <span className="t-h1 c1">70%</span>
+      <div className="card1 accent fact-card--blue rise">
+        <div className="accent__head">
+          <div>
+            <div className="accent__label">Общая готовность</div>
+            <div className="accent__value">70%</div>
+          </div>
+          {cite('s_rep3', 'Отчёт за сентябрь 2026, стр. 3')}
         </div>
         <div className="progress progress--lg" role="progressbar" aria-valuenow={70} aria-valuemin={0} aria-valuemax={100}>
           <div className="progress__bar" style={{ width: '70%' }} />
-          <div className="progress__knob" style={{ left: '70%' }} />
         </div>
-        <div className="hstack hstack--16" style={{ justifyContent: 'space-between' }}>
-          <span className="hstack" style={{ alignItems: 'baseline', gap: 10 }}>
-            <span style={{ fontSize: 28, lineHeight: '34px', fontWeight: 700 }}>4</span>
-            <span className="t-b2 c3">из</span>
-            <span style={{ fontSize: 28, lineHeight: '34px', fontWeight: 700 }}>6</span>
-            <span className="t-b1 c3">этапов завершены</span>
-          </span>
-          {cite('s_rep3', 'Отчёт за сентябрь 2026, стр. 3')}
+        <div className="accent__foot">
+          <span>4 из 6 этапов завершены</span>
+          <span>Дальше: монтаж каркаса, 20.10</span>
         </div>
       </div>
 

@@ -55,7 +55,7 @@ h1, h2, h3, p { margin: 0; }
 .badge {
   display: flex; flex: none; align-items: center; justify-content: center;
   width: 40px; height: 40px;
-  border-radius: var(--radius-sm);
+  border-radius: 10px;
   background: var(--er-gradient-primary);
   color: #fff;
 }
@@ -67,23 +67,23 @@ h1, h2, h3, p { margin: 0; }
   background: var(--er-gradient-primary);
   color: var(--er-color-on-primary);
   border: 0;
-  border-radius: var(--radius-md);
-  padding: 12px 22px;
-  box-shadow: var(--er-shadow-button); /* свечение только у основных кнопок, без анимации */
+  border-radius: var(--radius-sm);
+  padding: 11px 18px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   transition: filter var(--t-response), box-shadow var(--t-response);
 }
 .btn-p:hover { filter: brightness(0.94); }
-.btn-p:active { filter: brightness(0.86); box-shadow: none; }
+.btn-p:active { filter: brightness(0.86); }
 
 .ghost {
   background: var(--er-color-surface);
-  border: 1px solid var(--er-color-border-strong);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--er-color-border);
+  border-radius: var(--radius-sm);
   padding: 9px 16px;
   color: var(--er-color-text);
   transition: background-color var(--t-response), border-color var(--t-response), color var(--t-response);
 }
-.ghost:hover { background: var(--er-color-primary-soft); border-color: var(--er-color-primary); color: var(--er-color-primary-hover); }
+.ghost:hover { background: var(--er-color-surface-hover); border-color: var(--er-color-border-strong); color: var(--er-color-text); }
 
 .btn-danger {
   background: var(--er-color-surface);
@@ -112,11 +112,11 @@ h1, h2, h3, p { margin: 0; }
   border-radius: var(--radius-pill);
   font-size: 14px; line-height: 20px; font-weight: 500;
   background: var(--er-color-surface);
-  border: 1px solid var(--er-color-border-strong);
+  border: 1px solid var(--er-color-border);
   color: var(--er-color-text);
   transition: background-color var(--t-response), border-color var(--t-response), color var(--t-response);
 }
-.pill:hover { border-color: var(--er-color-primary); background: var(--er-color-surface-hover); }
+.pill:hover { border-color: var(--er-color-border-strong); background: var(--er-color-surface-hover); }
 .pill--active { background: var(--er-color-primary-soft); border-color: var(--er-color-primary); color: var(--er-color-primary-hover); }
 
 .menu {
@@ -175,6 +175,7 @@ h1, h2, h3, p { margin: 0; }
 
 .dot { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 50%; }
 .status { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 600; }
+.status--quiet { color: var(--er-color-muted); font-weight: 400; }
 
 .row { display: flex; gap: 16px; padding: 20px 0; border-top: 1px solid var(--er-color-divider); }
 
@@ -183,9 +184,9 @@ h1, h2, h3, p { margin: 0; }
 .table { border-collapse: collapse; width: 100%; }
 .table th {
   text-align: left; padding: 14px 20px;
-  font-size: 13px; line-height: 18px; font-weight: 600;
-  color: var(--er-color-muted);
-  background: var(--er-color-surface-hover);
+  font-size: 12px; line-height: 18px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--er-color-subtle);
+  background: transparent;
 }
 .table td { padding: 16px 20px; vertical-align: middle; }
 .table tbody tr { border-top: 1px solid var(--er-color-divider); transition: background-color var(--t-response); }
@@ -193,16 +194,16 @@ h1, h2, h3, p { margin: 0; }
 .cell-stack { display: flex; flex-direction: column; gap: 4px; }
 
 .progress {
-  position: relative; height: 10px; border-radius: 5px;
-  background: var(--er-color-divider);
+  position: relative; height: 8px; border-radius: 4px;
+  background: #d4e1fa;
 }
 .progress__bar {
   position: relative; height: 100%; border-radius: inherit;
-  background: linear-gradient(90deg, #245ddf 0%, #5b8cff 100%);
+  background: var(--er-color-primary);
   transform-origin: left;
   animation: grow var(--t-appear) var(--ease) backwards;
 }
-.progress--lg { height: 14px; border-radius: 7px; }
+.progress--lg { height: 8px; border-radius: 4px; }
 .progress--sm { height: 6px; border-radius: 3px; width: 140px; }
 .progress--sm .progress__bar { background: linear-gradient(90deg, #c98a2e, #9d5e13); }
 .progress__knob {

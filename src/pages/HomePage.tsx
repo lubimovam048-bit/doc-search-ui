@@ -1,26 +1,36 @@
 import { useNavigate } from 'react-router-dom';
+import Icon from '../components/Icon';
 import SearchField from '../components/SearchField';
 import { useApp } from '../context/AppContext';
 
-/** Стартовый экран: один вопрос, одно поле. Всё остальное спрятано. */
+/** Стартовый экран: один вопрос, одно поле. */
 export default function HomePage() {
   const { ask } = useApp();
   const navigate = useNavigate();
-  const go = (q: string) => navigate(`/q/${ask(q).id}`);
 
   return (
     <main className="welcome">
       <div className="welcome__hero">
-        <h1 className="t-h1 welcome__title">Найдите ответ в документах</h1>
-        <p className="t-b1 welcome__lead">
-          Задайте вопрос своими словами. Ответ будет со ссылками на документы.
-        </p>
-      </div>
+        <span className="welcome__tag"><i />Ответы только по загруженным документам</span>
+        <h1 className="welcome__title">Найдите ответ<br />в документах</h1>
+        <p className="welcome__lead">Задайте вопрос своими словами. Каждый ответ со ссылкой на документ-источник.</p>
 
-      <div className="welcome__composer">
-        <SearchField onSubmit={go} autoFocus />
-        <span className="t-cap1 c3 welcome__note">Запросы сохраняются и доступны администратору.</span>
+        <div className="welcome__composer">
+          <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} autoFocus />
+        </div>
+
+        <div className="hints">
+          <div className="hint">
+            <Icon name="help" size={22} stroke={1.5} />
+            <div><b>Как спрашивать</b><span>Обычными словами или номером приказа. Название объекта указывать необязательно.</span></div>
+          </div>
+          <div className="hint">
+            <Icon name="link" size={22} stroke={1.5} />
+            <div><b>Откуда ответ</b><span>Рядом с каждым фактом номер источника. Нажмите, чтобы открыть документ.</span></div>
+          </div>
+        </div>
       </div>
+      <span className="t-cap1 c3 welcome__note">Запросы сохраняются и доступны администратору.</span>
     </main>
   );
 }
