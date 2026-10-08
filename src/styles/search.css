@@ -99,10 +99,10 @@
 .timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .timeline__item { position: relative; display: grid; grid-template-columns: 52px 18px minmax(0, 1fr); gap: 0 12px; padding-bottom: 22px; }
 .timeline__item:last-child { padding-bottom: 0; }
-.timeline__item::before { content: ''; position: absolute; left: 63px; top: 20px; bottom: -2px; width: 2px; background: #dfe7f5; }
+.timeline__item::before { content: ''; position: absolute; left: 72px; top: 17px; bottom: -7px; width: 2px; background: #dfe7f5; }
 .timeline__item:last-child::before { display: none; }
 .timeline__date { font-size: 15px; line-height: 24px; font-weight: 600; color: var(--er-color-text); }
-.timeline__dot { width: 10px; height: 10px; margin: 7px 0 0 4px; border-radius: 50%; background: var(--er-color-primary); box-shadow: 0 0 0 4px #e8effc; }
+.timeline__dot { position: relative; z-index: 1; width: 10px; height: 10px; margin: 7px 0 0 4px; border-radius: 50%; background: var(--er-color-primary); box-shadow: 0 0 0 4px #e8effc; }
 
 .srcs { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
 .srcs__title { margin: 0; font-size: 14px; font-weight: 600; color: var(--er-color-muted); }
@@ -131,5 +131,5 @@
 .followups__chip { padding: 8px 14px; border: 1px solid #d5deec; border-radius: 999px; background: #fff; font-size: 14px; line-height: 20px; text-align: left; color: var(--er-color-text); transition: border-color .15s, background-color .15s; }
 .followups__chip:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
 .ans .composer { margin-top: auto; }
-@media (max-width: 900px) { .ans { padding: 64px 16px 0; } .timeline__item { grid-template-columns: 44px 18px minmax(0, 1fr); } .timeline__item::before { left: 55px; } }
+@media (max-width: 900px) { .ans { padding: 64px 16px 0; } .timeline__item { grid-template-columns: 44px 18px minmax(0, 1fr); } .timeline__item::before { left: 64px; } }
 .ans .composer { background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0, #fff 30px); }
