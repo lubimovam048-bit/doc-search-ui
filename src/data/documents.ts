@@ -18,8 +18,8 @@ export interface DocRow {
 }
 
 export const DOC_STATUS: Record<DocStatus, { label: string; color: string }> = {
-  ready: { label: 'Готов', color: '#147854' },
-  processing: { label: 'Обрабатывается', color: '#9D5E13' },
+  ready: { label: 'Обработан', color: '#147854' },
+  processing: { label: 'Обработка', color: '#9D5E13' },
   queued: { label: 'В очереди', color: '#4B607C' },
   error: { label: 'Ошибка чтения', color: '#B43B51' },
 };
@@ -28,7 +28,7 @@ export const DOC_FILTER_MENUS = {
   object: { title: 'Объект', options: ['Все объекты', 'Вокзал ст. Заречная', 'Участок Речная — Горный', 'Депо Северное', 'Мост через р. Тихая', 'Без привязки к объекту'] },
   type: { title: 'Тип', options: ['Все типы', 'Приказ', 'Отчёт', 'Протокол', 'Методика', 'Таблицы и планы', 'Другое'] },
   period: { title: 'Период', options: ['Весь период', '2026', 'Сентябрь 2026', 'Август 2026', '2025'] },
-  status: { title: 'Статус', options: ['Все статусы', 'Готов', 'Обрабатывается', 'В очереди', 'Ошибка чтения'] },
+  status: { title: 'Статус', options: ['Все статусы', 'Обработан', 'Обработка', 'В очереди', 'Ошибка чтения'] },
 } as const;
 
 export const DOCUMENTS: DocRow[] = [
