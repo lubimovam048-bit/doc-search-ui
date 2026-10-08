@@ -44,7 +44,7 @@
   padding: var(--space-8) var(--space-5);
   background: #fff;
   border-left: 1px solid var(--er-color-divider);
-  position: sticky; top: 60px; align-self: flex-start; height: calc(100vh - 60px); overflow-y: auto;
+  position: sticky; top: 0; align-self: flex-start; height: 100vh; overflow-y: auto;
 }
 .sources__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 4px; }
 .sources__list { display: flex; flex-direction: column; gap: 4px; }

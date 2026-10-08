@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import Icon from './Icon';
 import Sidebar from './Sidebar';
-import TopNav from './TopNav';
 
 export default function AppShell() {
   const { pathname } = useLocation();
-  // история запросов нужна только в «Ассистенте»; таблицам файлов и журнала отдаём всю ширину
-  const withHistory = pathname === '/' || pathname.startsWith('/q/');
-  const [histOpen, setHistOpen] = useState(false);
-  // на узком экране история открывается как выезжающая панель и закрывается при переходе
-  useEffect(() => setHistOpen(false), [pathname]);
+  // на узком экране меню открывается как выезжающая панель и закрывается при переходе
+  const [open, setOpen] = useState(false);
+  useEffect(() => setOpen(false), [pathname]);
   return (
     <div className="app">
-      <TopNav onHistory={withHistory ? () => setHistOpen((v) => !v) : undefined} historyOpen={histOpen} />
+      <button className="app__burger" onClick={() => setOpen((v) => !v)} aria-label="Меню" aria-expanded={open}>
+        <Icon name="menu" size={20} />
+      </button>
+      <Sidebar open={open} onNavigate={() => setOpen(false)} />
+      {open && <div className="drawer-scrim" onClick={() => setOpen(false)} />}
       <div className="app__body">
-        {withHistory && <Sidebar open={histOpen} />}
-        {withHistory && histOpen && <div className="drawer-scrim" onClick={() => setHistOpen(false)} />}
         <Outlet />
       </div>
     </div>
