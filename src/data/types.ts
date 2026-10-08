@@ -31,6 +31,13 @@ export interface HistoryEntry {
   query: string;
   scenario: AnswerType;
   at: number;
+  /** Уточнение запроса: «pending» пока пользователь не ответил, потом выбранный объект и период. */
+  clarify?: 'pending' | ClarifyScope;
+}
+
+export interface ClarifyScope {
+  object: string;
+  period: string;
 }
 
 export interface Filters {

@@ -10,6 +10,7 @@ import { SOURCES } from '../data/sources';
 import {
   DivergeAnswer, EmptyAnswer, ListAnswer, StatusAnswer, SummaryAnswer, TableAnswer,
 } from '../features/search/AnswerViews';
+import Clarify from '../features/search/Clarify';
 import SourceCards from '../features/search/SourceCards';
 import DocPane, { LIST_TAB } from '../features/search/DocPane';
 
@@ -24,7 +25,7 @@ const FEEDBACK_TEXT: Record<string, string> = {
 
 export default function AnswerPage() {
   const { id } = useParams();
-  const { history, ask } = useApp();
+  const { history, ask, setClarify } = useApp();
   const navigate = useNavigate();
   const entry = history.find((h) => h.id === id);
   const scenario = entry ? SCENARIOS[entry.scenario] : null;
@@ -34,6 +35,7 @@ export default function AnswerPage() {
   const [tabs, setTabs] = useState<string[]>([]);
   const [active, setActive] = useState<string>(LIST_TAB);
   const [hidden, setHidden] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [feedback, setFeedback] = useState('');
   const answerRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +45,7 @@ export default function AnswerPage() {
     setTabs([]);
     setActive(LIST_TAB);
     setHidden(false);
+    setEditing(false);
     setFeedback('');
   }, [id, scenario]);
 
@@ -82,6 +85,8 @@ export default function AnswerPage() {
     }
   };
   const viewing = tabs.length > 0 && !hidden;
+  const scope = entry.clarify && entry.clarify !== 'pending' ? entry.clarify : null;
+  const asking = entry.clarify === 'pending' || editing;
   const docsText = sources.length === 1 ? 'в 1 документе' : `в ${sources.length} документах`;
 
   const cite = (sid: string, label: string) => (
@@ -119,6 +124,22 @@ export default function AnswerPage() {
         )}
         <div className="ans__q">{entry.query}</div>
 
+        {asking && (
+          <Clarify
+            initial={scope ?? undefined}
+            onDone={(sc) => { setClarify(entry.id, sc); setEditing(false); }}
+            onCancel={scope ? () => setEditing(false) : undefined}
+          />
+        )}
+
+        {!asking && (
+          <>
+            {scope && (
+              <div className="ans__scope">
+                <span>Уточнено: {scope.object} · {scope.period}</span>
+                <button onClick={() => setEditing(true)}>Изменить</button>
+              </div>
+            )}
         <div className="ans__trust">
           <span className="ans__type">{scenario.type}</span>
           {sources.length > 0 && <span>Найдено {docsText}</span>}
@@ -142,14 +163,23 @@ export default function AnswerPage() {
         )}
         {feedback && <span className="t-b25 cg" role="status">{FEEDBACK_TEXT[feedback]}</span>}
 
-        <div className="followups" aria-label="Что спросить дальше">
-          <span className="t-b25 c3">Что спросить дальше</span>
-          <div className="followups__list">
+        <section className="related" aria-label="Связанные вопросы">
+          <h2 className="related__title">Связанные вопросы</h2>
+          <ul className="related__list">
             {FOLLOW_UPS[scenario.id].map((q) => (
-              <button key={q} className="followups__chip" onClick={() => navigate(`/q/${ask(q).id}`)}>{q}</button>
+              <li key={q}>
+                <button className="related__item" onClick={() => navigate(`/q/${ask(q).id}`)}>
+                  <Icon name="search" size={16} />
+                  <span>{q}</span>
+                  <Icon name="arrow" size={16} className="related__go" />
+                </button>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </section>
+
+          </>
+        )}
 
         <div className="composer">
           <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} />

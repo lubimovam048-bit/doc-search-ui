@@ -56,6 +56,12 @@ export const SCENARIOS: Record<AnswerType, Scenario> = {
  * Макетный «движок»: подбирает один из готовых ответов по ключевым словам.
  * В реальной системе здесь будет запрос к бэкенду поиска.
  */
+const OBJECT_RE = /заречн|речн|горн|депо|мост|тихая|перегон/i;
+/** Уточняем объект и период, если запрос про объект, но объект в нём не назван. */
+export function needsClarify(raw: string, scenario: AnswerType): boolean {
+  return (scenario === 'summary' || scenario === 'table' || scenario === 'diverge' || scenario === 'status') && !OBJECT_RE.test(raw);
+}
+
 export function classifyQuery(raw: string): AnswerType {
   const q = raw.toLowerCase();
   if (/основан/.test(q)) return 'deleted';
