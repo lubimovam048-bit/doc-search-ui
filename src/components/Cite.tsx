@@ -6,23 +6,15 @@ interface Props {
   active: boolean;
   deleted?: boolean;
   onClick: () => void;
-  /** Открыть документ на нужной странице. Для удалённых источников не передаётся. */
-  onOpen?: () => void;
 }
 
-/** Сноска-плашка: номер источника + подпись. Клик по плашке подсвечивает карточку под ответом, иконка открывает документ. */
-export default function Cite({ n, label, active, deleted, onClick, onOpen }: Props) {
+/** Сноска-плашка: номер источника + подпись. Одно действие: открывает документ на нужной странице (у удалённых источников показывает карточку). */
+export default function Cite({ n, label, active, deleted, onClick }: Props) {
   return (
-    <span className="cite-wrap">
-      <button className={`cite${active ? ' cite--on' : ''}`} onClick={onClick}>
-        <span className={`cn${deleted ? ' cn--del' : active ? ' cn--on' : ''}`}>{n}</span>
-        <span>{label}</span>
-      </button>
-      {onOpen && !deleted && (
-        <button className="cite__open" onClick={onOpen} aria-label={`Открыть документ: ${label}`} title="Открыть документ">
-          <Icon name="external" size={15} />
-        </button>
-      )}
-    </span>
+    <button className={`cite${active ? ' cite--on' : ''}`} onClick={onClick} title={deleted ? 'Документ удалён' : 'Открыть документ'}>
+      <span className={`cn${deleted ? ' cn--del' : active ? ' cn--on' : ''}`}>{n}</span>
+      <span>{label}</span>
+      {!deleted && <Icon name="external" size={14} className="cite__ico" />}
+    </button>
   );
 }

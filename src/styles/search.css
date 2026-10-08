@@ -133,9 +133,6 @@
 .ans .composer { background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0, #fff 30px); }
 
 /* ---------- Документ справа от ответа ---------- */
-.cite-wrap { display: inline-flex; align-items: center; gap: 6px; }
-.cite__open { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--er-color-border); border-radius: 50%; background: #fff; color: var(--er-color-primary); transition: border-color .15s, background-color .15s; }
-.cite__open:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
 .scard__foot { padding: 4px 18px 16px; }
 .scard__btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #b9cdf5; border-radius: 10px; background: #fff; font-size: 14px; font-weight: 500; color: var(--er-color-primary-hover); transition: background-color .15s, border-color .15s; }
 .scard__btn:hover { background: #f4f7fe; border-color: var(--er-color-primary); }
@@ -164,3 +161,5 @@
   .docpane { position: fixed; inset: 0; z-index: 45; height: auto; flex: none; width: 100%; }
   .main--doc .ans { padding-left: 24px; padding-right: 24px; }
 }
+
+.cite__ico { flex: none; margin-left: 2px; color: var(--er-color-primary); }

@@ -25,7 +25,7 @@ export function ListAnswer({ openId, onPick, indexOf }: { openId: string | null;
           <div className="stack stack--8" style={{ minWidth: 0, flex: 1 }}>
             <span className="t-b1 c1">{SOURCES[d.id].title}</span>
             <span className="t-blog c2">{d.why}</span>
-            <div><button className="btn-link t-btn2" onClick={() => onPick(d.id)}>Перейти к источнику</button></div>
+            <div><button className="btn-link t-btn2" onClick={() => onPick(d.id)}>Открыть документ</button></div>
           </div>
         </div>
       ))}

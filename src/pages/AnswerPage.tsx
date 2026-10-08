@@ -63,12 +63,12 @@ export default function AnswerPage() {
   const docsText = sources.length === 1 ? 'в 1 документе' : `в ${sources.length} документах`;
 
   const cite = (sid: string, label: string) => (
-    <Cite n={indexOf(sid)} label={label} active={openId === sid} deleted={SOURCES[sid].kind === 'deleted'} onClick={() => pick(sid)} onOpen={() => openDoc(sid)} />
+    <Cite n={indexOf(sid)} label={label} active={openId === sid} deleted={SOURCES[sid].kind === 'deleted'} onClick={() => (SOURCES[sid].kind === 'deleted' ? pick(sid) : openDoc(sid))} />
   );
 
   const view = (() => {
     switch (scenario.id) {
-      case 'list': return <ListAnswer openId={openId} onPick={pick} indexOf={indexOf} />;
+      case 'list': return <ListAnswer openId={openId} onPick={openDoc} indexOf={indexOf} />;
       case 'summary': return <SummaryAnswer deleted={false} cite={cite} />;
       case 'deleted': return <SummaryAnswer deleted cite={cite} />;
       case 'table': return <TableAnswer cite={cite} />;
@@ -133,7 +133,7 @@ export default function AnswerPage() {
           sources={sources.filter((x) => x.kind !== 'deleted')}
           current={viewing}
           onSelect={openDoc}
-          onClose={() => setViewId(null)}
+          onClose={() => { setViewId(null); setOpenId(null); }}
         />
       )}
     </main>
