@@ -70,8 +70,8 @@
 .wbg__layer {
   position: absolute; inset: 0; opacity: .46;
   --rx: 64%; --ry: 98%;
-  -webkit-mask-image: radial-gradient(ellipse var(--rx) var(--ry) at 50% 100%, transparent 0%, transparent 30%, rgba(0,0,0,.04) 40%, rgba(0,0,0,.16) 52%, rgba(0,0,0,.4) 66%, rgba(0,0,0,.72) 82%, #000 100%);
-          mask-image: radial-gradient(ellipse var(--rx) var(--ry) at 50% 100%, transparent 0%, transparent 30%, rgba(0,0,0,.04) 40%, rgba(0,0,0,.16) 52%, rgba(0,0,0,.4) 66%, rgba(0,0,0,.72) 82%, #000 100%);
+  -webkit-mask-image: radial-gradient(ellipse var(--rx) var(--ry) at 50% 100%, transparent 0%, transparent 44%, rgba(0,0,0,.04) 52%, rgba(0,0,0,.16) 62%, rgba(0,0,0,.4) 74%, rgba(0,0,0,.72) 87%, #000 100%);
+          mask-image: radial-gradient(ellipse var(--rx) var(--ry) at 50% 100%, transparent 0%, transparent 44%, rgba(0,0,0,.04) 52%, rgba(0,0,0,.16) 62%, rgba(0,0,0,.4) 74%, rgba(0,0,0,.72) 87%, #000 100%);
 }
 .wbg__layer--pulse { opacity: 1; }
 .wbg__layer--pulse svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
