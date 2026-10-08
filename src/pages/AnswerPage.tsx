@@ -11,7 +11,7 @@ import {
   DivergeAnswer, EmptyAnswer, ListAnswer, StatusAnswer, SummaryAnswer, TableAnswer,
 } from '../features/search/AnswerViews';
 import SourceCards from '../features/search/SourceCards';
-import DocPane from '../features/search/DocPane';
+import DocPane, { LIST_TAB } from '../features/search/DocPane';
 
 const FEEDBACK_TEXT: Record<string, string> = {
   copied: 'Ответ скопирован.',
@@ -31,14 +31,16 @@ export default function AnswerPage() {
 
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [viewId, setViewId] = useState<string | null>(null);
+  const [tabs, setTabs] = useState<string[]>([]);
+  const [active, setActive] = useState<string>(LIST_TAB);
   const [feedback, setFeedback] = useState('');
   const answerRef = useRef<HTMLDivElement>(null);
 
   // при переходе к другому запросу раскрываем первый источник и сбрасываем оценку
   useEffect(() => {
     setOpenId(null);
-    setViewId(null);
+    setTabs([]);
+    setActive(LIST_TAB);
     setFeedback('');
   }, [id, scenario]);
 
@@ -50,7 +52,22 @@ export default function AnswerPage() {
     setOpenId(sid);
     document.getElementById(`src-${sid}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
-  const openDoc = (sid: string) => { setOpenId(sid); setViewId(sid); };
+  const openDoc = (sid: string) => {
+    setOpenId(sid);
+    setTabs((t) => (t.includes(sid) ? t : [...t, sid]));
+    setActive(sid);
+  };
+  const activate = (id: string) => { setActive(id); setOpenId(id === LIST_TAB ? null : id); };
+  const closeTab = (sid: string) => {
+    const rest = tabs.filter((x) => x !== sid);
+    setTabs(rest);
+    if (active === sid) {
+      const i = tabs.indexOf(sid);
+      const next = rest[i] ?? rest[i - 1] ?? LIST_TAB;
+      setActive(next);
+      setOpenId(next === LIST_TAB ? null : next);
+    }
+  };
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(answerRef.current?.innerText ?? '');
@@ -59,7 +76,7 @@ export default function AnswerPage() {
       setFeedback('copyfail');
     }
   };
-  const viewing = sources.find((x) => x.id === viewId) ?? null;
+  const viewing = tabs.length > 0;
   const docsText = sources.length === 1 ? 'в 1 документе' : `в ${sources.length} документах`;
 
   const cite = (sid: string, label: string) => (
@@ -131,9 +148,11 @@ export default function AnswerPage() {
       {viewing && (
         <DocPane
           sources={sources.filter((x) => x.kind !== 'deleted')}
-          current={viewing}
-          onSelect={openDoc}
-          onClose={() => { setViewId(null); setOpenId(null); }}
+          tabs={tabs}
+          active={active}
+          onActivate={activate}
+          onOpen={openDoc}
+          onCloseTab={closeTab}
         />
       )}
     </main>
