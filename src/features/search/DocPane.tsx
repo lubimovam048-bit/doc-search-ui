@@ -19,7 +19,6 @@ interface Props {
 
 const pageInfo = (s: Source) => /стр\.\s*(\d+)\s*из\s*(\d+)/.exec(s.meta);
 const ext = (s: Source) => (s.kind === 'table' ? 'XLS' : 'PDF');
-const shortTitle = (s: Source) => (s.title.length > 22 ? `${s.title.slice(0, 21)}…` : s.title);
 
 /** Правая часть: вкладки «Список» и открытые документы. У каждой вкладки документа свой крестик. */
 export default function DocPane({ sources, tabs, active, onActivate, onOpen, onCloseTab }: Props) {
@@ -45,7 +44,7 @@ export default function DocPane({ sources, tabs, active, onActivate, onOpen, onC
           return (
             <span key={id} className={`dtab${active === id ? ' dtab--on' : ''}`}>
               <button role="tab" aria-selected={active === id} className="dtab__main" onClick={() => onActivate(id)} title={s.title}>
-                <span className="scard__ext">{ext(s)}</span>{shortTitle(s)}
+                <span className="scard__ext">{ext(s)}</span><span className="dtab__t">{s.title}</span>
               </button>
               <button className="dtab__x" onClick={() => onCloseTab(id)} aria-label={`Закрыть вкладку: ${s.title}`}><Icon name="x" size={14} /></button>
             </span>
