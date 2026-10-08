@@ -189,3 +189,6 @@
 .dtabs__hide { flex: none; display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px auto; padding: 0 12px; height: 32px; border: 1px solid #d5deec; border-radius: 10px; background: #fff; font-size: 13px; color: var(--er-color-text); }
 .dtabs__hide:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
 .ans__restore { position: sticky; top: 12px; z-index: 5; align-self: flex-end; margin-bottom: -8px; }
+
+.dtabs__hide--first { margin-left: auto; }
+.dtabs__hide--second { margin-left: 0; }
