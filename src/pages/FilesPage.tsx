@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Dialog from '../components/Dialog';
-import FilterRow, { type MenuDef } from '../components/FilterRow';
 import Icon from '../components/Icon';
 import SidePanel from '../components/SidePanel';
 import {
-  DOCUMENTS, DOC_FILTER_MENUS, DOC_STATUS, DOC_TYPES, OBJECTS, suggestMeta, usedIn, type DocRow,
+  DOCUMENTS, DOC_STATUS, DOC_TYPES, OBJECTS, suggestMeta, usedIn, type DocRow,
 } from '../data/documents';
 
-type Key = 'type' | 'status';
-const MENUS = { type: DOC_FILTER_MENUS.type, status: DOC_FILTER_MENUS.status };
-const INITIAL: Record<Key, string> = { type: 'Все типы', status: 'Все статусы' };
+type Tab = 'all' | 'ok' | 'no';
 const PAGE = 8;
 const ALL = 'all';
 const TRASH = 'trash';
@@ -19,12 +16,15 @@ interface Toast { text: string; undo?: () => void }
 
 const today = () => new Date().toLocaleDateString('ru-RU');
 const sizeText = (n: number) => `${(n / 1048576).toFixed(1).replace('.', ',')} МБ`;
+const ext = (d: DocRow) => (d.meta.split(' · ')[0] || 'ФАЙЛ').slice(0, 4);
+const sizeOf = (d: DocRow) => d.meta.split(' · ').slice(-1)[0];
 const needsAttention = (d: DocRow) => !d.trashed && d.status === 'error';
 
 export default function FilesPage() {
   const [docs, setDocs] = useState<DocRow[]>(DOCUMENTS);
   const [node, setNode] = useState<string>(ALL);
-  const [f, setF] = useState(INITIAL);
+  const [tab, setTab] = useState<Tab>('all');
+  const [focus, setFocus] = useState<string | null>(null);
   const [q, setQ] = useState('');
   const [onlyAttn, setOnlyAttn] = useState(false);
   const [page, setPage] = useState(0);
@@ -40,7 +40,7 @@ export default function FilesPage() {
   const timers = useRef<number[]>([]);
 
   useEffect(() => () => timers.current.forEach(window.clearTimeout), []);
-  useEffect(() => { setPage(0); setSel(new Set()); }, [node, f, q, onlyAttn]);
+  useEffect(() => { setPage(0); setSel(new Set()); }, [node, tab, q, onlyAttn]);
   useEffect(() => {
     if (!toast) return;
     const t = window.setTimeout(() => setToast(null), 7000);
@@ -56,19 +56,21 @@ export default function FilesPage() {
       docs.filter((d) => {
         if (node === TRASH ? !d.trashed : d.trashed) return false;
         if (node !== ALL && node !== TRASH && d.object !== node) return false;
-        if (f.type !== INITIAL.type && d.type !== f.type) return false;
-        if (f.status !== INITIAL.status && DOC_STATUS[d.status].label !== f.status) return false;
+        if (tab === 'ok' && d.status !== 'ready') return false;
+        if (tab === 'no' && d.status === 'ready') return false;
         if (onlyAttn && !needsAttention(d)) return false;
         if (q.trim() && !d.title.toLowerCase().includes(q.trim().toLowerCase())) return false;
         return true;
       }),
-    [docs, node, f, q, onlyAttn],
+    [docs, node, tab, q, onlyAttn],
   );
   const pages = Math.max(1, Math.ceil(rows.length / PAGE));
   const visible = rows.slice(page * PAGE, page * PAGE + PAGE);
   const allOnPage = visible.length > 0 && visible.every((d) => sel.has(d.id));
 
-  const menus: MenuDef<Key>[] = (Object.keys(MENUS) as Key[]).map((k) => ({ key: k, title: MENUS[k].title, options: MENUS[k].options, value: f[k] }));
+  const inNode = live.filter((d) => node === ALL || d.object === node);
+  const okCount = inNode.filter((d) => d.status === 'ready').length;
+  const detail = docs.find((d) => d.id === focus && !!d.trashed === (node === TRASH)) ?? null;
 
   /* ---------- действия ---------- */
   const patch = (ids: string[], p: Partial<DocRow>) => setDocs((all) => all.map((d) => (ids.includes(d.id) ? { ...d, ...p } : d)));
@@ -125,54 +127,61 @@ export default function FilesPage() {
     { id: TRASH, label: 'Корзина', count: trashCount },
   ];
 
+  const crumb = node === ALL ? 'Все документы' : node === TRASH ? 'Корзина' : node;
+
   return (
     <main
-      className="main main--wide"
+      className="fm"
       onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
       onDragLeave={(e) => e.currentTarget === e.target && setDrag(false)}
       onDrop={(e) => { e.preventDefault(); setDrag(false); onFilesPicked(e.dataTransfer.files); }}
     >
-      <div className="page-head">
-        <h1 className="t-h3">Файлы</h1>
+      <div className="fm__bar">
+        <div className="fm__crumbs" aria-label="Путь">
+          <button onClick={() => setNode(ALL)}>Документы</button>
+          <Icon name="arrow" size={14} color="var(--er-color-subtle)" />
+          <b>{crumb}</b>
+        </div>
+        <label className="fm__search">
+          <Icon name="search" size={16} color="var(--er-color-subtle)" />
+          <input aria-label="Поиск по названию" placeholder="Поиск по документам" value={q} onChange={(e) => setQ(e.target.value)} />
+        </label>
         <button className="btn-p t-btn2 hstack hstack--8" style={{ flexWrap: 'nowrap' }} onClick={() => pickRef.current?.click()}>
-          <Icon name="upload" size={18} />Загрузить файлы
+          <Icon name="upload" size={18} />Загрузить
         </button>
         <input ref={pickRef} type="file" multiple hidden aria-label="Выбрать файлы" onChange={(e) => { onFilesPicked(e.target.files ?? []); e.target.value = ''; }} />
         <input ref={replaceRef} type="file" hidden aria-label="Выбрать новую версию" onChange={(e) => { onReplacePicked(e.target.files); e.target.value = ''; }} />
       </div>
 
-      {drag && <div className="dropzone" role="status">Отпустите файлы, чтобы добавить</div>}
-
-      <div className="hstack hstack--12">
-        <label className="search-box" style={{ flex: '0 1 360px' }}>
-          <Icon name="search" size={16} color="var(--er-color-subtle)" />
-          <input className="t-b25" aria-label="Поиск по названию" placeholder="Название или номер приказа" value={q} onChange={(e) => setQ(e.target.value)} />
-        </label>
-        <FilterRow menus={menus} onChange={(k, v) => setF((s) => ({ ...s, [k]: v }))} />
+      <div className="fm__tabs" role="tablist" aria-label="Статус обработки">
+        {([['all', 'Все', inNode.length], ['ok', 'Обработаны', okCount], ['no', 'Не обработаны', inNode.length - okCount]] as const).map(([k, label, n]) => (
+          <button key={k} role="tab" aria-selected={tab === k} className={`fm__tab${tab === k ? ' fm__tab--on' : ''}`} onClick={() => setTab(k)}>
+            {label}<i>{n}</i>
+          </button>
+        ))}
       </div>
 
-      {attnCount > 0 && node !== TRASH && (
-        <div className="notice notice--sm" style={{ marginBottom: 0, alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="hstack hstack--12" style={{ flexWrap: 'nowrap' }}>
-            <Icon name="warn" color="var(--er-color-warning)" />
-            <span className="t-b25"><b>Требуют внимания: {attnCount}.</b> Не удалось прочитать файлы.</span>
-          </span>
-          <button className="ghost t-btn2" aria-pressed={onlyAttn} onClick={() => setOnlyAttn((v) => !v)}>{onlyAttn ? 'Показать все' : 'Показать'}</button>
-        </div>
-      )}
+      {drag && <div className="dropzone" role="status">Отпустите файлы, чтобы добавить</div>}
 
-      <div className="files">
-        <nav className="tree" aria-label="Объекты">
+      <div className="fm__body">
+        <nav className="fm__tree" aria-label="Объекты">
           {nodes.map((n) => (
-            <button key={n.id} className={`tree__item${node === n.id ? ' tree__item--on' : ''}`} onClick={() => setNode(n.id)} aria-current={node === n.id ? 'true' : undefined}>
-              <Icon name={n.id === TRASH ? 'trash' : n.id === ALL ? 'layers' : 'folder'} size={16} />
-              <span className="tree__label">{n.label}</span>
-              <span className={`tree__count${n.warn && n.count ? ' tree__count--warn' : ''}`}>{n.count}</span>
+            <button key={n.id} className={`fm__node${node === n.id ? ' fm__node--on' : ''}${n.id === TRASH ? ' fm__node--trash' : ''}`} onClick={() => { setNode(n.id); setFocus(null); }} aria-current={node === n.id ? 'true' : undefined}>
+              <Icon name={n.id === TRASH ? 'trash' : 'folder'} size={16} />
+              <span className="fm__label">{n.label}</span>
+              <span className="fm__count">{n.count}</span>
             </button>
           ))}
         </nav>
 
-        <div className="card1 files__table">
+        <section className="fm__list" aria-label="Документы">
+          {attnCount > 0 && node !== TRASH && (
+            <div className="fm__attn">
+              <Icon name="warn" size={16} color="var(--er-color-warning)" />
+              <span className="t-b25"><b>Требуют внимания: {attnCount}.</b> Не удалось прочитать файлы.</span>
+              <button className="btn-link t-b25" aria-pressed={onlyAttn} onClick={() => setOnlyAttn((v) => !v)}>{onlyAttn ? 'Показать все' : 'Показать'}</button>
+            </div>
+          )}
           {sel.size > 0 && (
             <div className="bulk" role="region" aria-label="Действия с выбранными">
               <span className="t-btn2">Выбрано: {sel.size}</span>
@@ -192,56 +201,34 @@ export default function FilesPage() {
               </div>
             </div>
           )}
-          <div className="table-wrap">
-            <table className="table" style={{ minWidth: 820 }}>
-              <thead>
-                <tr>
-                  <th style={{ width: 44 }}><input type="checkbox" className="check" aria-label="Выбрать все на странице" checked={allOnPage} onChange={toggleAll} /></th>
-                  <th>Название</th><th>Объект · тип</th><th>Загружен</th><th>Статус</th><th style={{ textAlign: 'right' }}>Действия</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((d) => {
-                  const st = DOC_STATUS[d.status];
-                  const busy = d.status === 'processing' || d.status === 'queued';
-                  return (
-                    <tr key={d.id} className={sel.has(d.id) ? 'tr--sel' : ''}>
-                      <td><input type="checkbox" className="check" aria-label={`Выбрать «${d.title}»`} checked={sel.has(d.id)} onChange={() => toggleOne(d.id)} /></td>
-                      <td style={{ minWidth: 240 }}>
-                        <div className="cell-stack"><span className="t-b2" style={{ fontWeight: 500 }}>{d.title}</span><span className="t-b3 c3">{d.meta}</span></div>
-                      </td>
-                      <td><div className="cell-stack"><span className="t-b25">{d.object}</span><span className="t-b3 c3">{d.type}</span></div></td>
-                      <td style={{ whiteSpace: 'nowrap' }}><div className="cell-stack"><span className="t-b25">{d.date}</span><span className="t-b3 c3">{d.by}</span></div></td>
-                      <td style={{ minWidth: 170 }}>
-                        <div className="stack stack--8" style={{ alignItems: 'flex-start' }}>
-                          <span className="status status--quiet"><span className="dot" style={{ background: st.color }} />{st.label}</span>
-                          {d.progress !== undefined && <div className="progress progress--sm"><div className="progress__bar" style={{ width: `${d.progress}%` }} /></div>}
-                          {d.note && <span className="t-b3 c3">{d.note}</span>}
-                        </div>
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div className="row-actions">
-                          <span className="row-more" aria-hidden="true">···</span>
-                          {d.trashed ? (
-                            <button className="btn-link t-b25" onClick={() => patch([d.id], { trashed: false })}>Восстановить</button>
-                          ) : (
-                            <>
-                              {!busy && d.status !== 'error' && <button className="btn-link t-b25" onClick={() => setViewing(d)}>Открыть</button>}
-                              {!busy && <button className="btn-link t-b25" onClick={() => startReplace(d.id)}>Заменить</button>}
-                              <button className="btn-link btn-link--danger t-b25" onClick={() => setDeleting([d])}>Удалить</button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+
+          <div className="fm__row fm__row--head">
+            <input type="checkbox" className="check" aria-label="Выбрать все на странице" checked={allOnPage} onChange={toggleAll} />
+            <span>Название</span><span>Статус</span><span>Изменён</span><span>Размер</span>
+          </div>
+          <div className="fm__rows">
+            {visible.map((d) => {
+              const st = DOC_STATUS[d.status];
+              return (
+                <div key={d.id} className={`fm__row${sel.has(d.id) || focus === d.id ? ' fm__row--sel' : ''}`} onClick={() => setFocus(d.id)}>
+                  <input type="checkbox" className="check" aria-label={`Выбрать «${d.title}»`} checked={sel.has(d.id)} onClick={(e) => e.stopPropagation()} onChange={() => toggleOne(d.id)} />
+                  <span className="fm__name">
+                    <span className="fm__ext">{ext(d)}</span>
+                    <button className="fm__title" onClick={(e) => { e.stopPropagation(); setFocus(d.id); }} title={d.title}>{d.title}</button>
+                  </span>
+                  <span className="fm__status">
+                    <span className="dot" style={{ background: st.color }} />{st.label}
+                    {d.progress !== undefined && <span className="fm__mini"><i style={{ width: `${d.progress}%` }} /></span>}
+                  </span>
+                  <span>{d.date}</span>
+                  <span>{sizeOf(d)}</span>
+                </div>
+              );
+            })}
             {rows.length === 0 && (
               <div className="empty-state">
                 <span className="t-sub3">{node === TRASH ? 'Корзина пуста' : 'Ничего не найдено'}</span>
-                <span className="t-b25 c3">{node === TRASH ? 'Удалённые файлы хранятся здесь 30 дней.' : 'Измените фильтры или строку поиска.'}</span>
+                <span className="t-b25 c3">{node === TRASH ? 'Удалённые файлы хранятся здесь 30 дней.' : 'Измените фильтр или строку поиска.'}</span>
               </div>
             )}
           </div>
@@ -255,7 +242,48 @@ export default function FilesPage() {
             </div>
           )}
           {node === TRASH && rows.length > 0 && <div className="pager"><span className="t-b3 c3">Файлы из корзины удаляются навсегда через 30 дней.</span></div>}
-        </div>
+          {node !== TRASH && (
+            <button className="fm__drop" onClick={() => pickRef.current?.click()}>
+              <Icon name="upload" size={16} />Перетащите файлы сюда или нажмите, чтобы загрузить
+            </button>
+          )}
+        </section>
+
+        <aside className="fm__detail" aria-label="Сведения о документе">
+          {detail ? (
+            <>
+              <div className="fm__preview" aria-hidden="true">
+                <span className="paper__line" /><span className="paper__line paper__line--s" /><span className="paper__line" />
+                <span className="paper__line" /><span className="paper__line paper__line--s" />
+              </div>
+              <h2 className="fm__dtitle">{detail.title}</h2>
+              <dl className="fm__facts">
+                <dt>Тип</dt><dd>{detail.meta.split(' · ').slice(0, -1).join(' · ') || detail.type}</dd>
+                <dt>Размер</dt><dd>{sizeOf(detail)}</dd>
+                <dt>Загружен</dt><dd>{detail.date}, {detail.by}</dd>
+                <dt>Объект</dt><dd>{detail.object}</dd>
+                <dt>Статус</dt><dd><span className="dot" style={{ background: DOC_STATUS[detail.status].color }} />{detail.note || DOC_STATUS[detail.status].label}</dd>
+              </dl>
+              {detail.trashed ? (
+                <button className="btn-p t-btn2" onClick={() => patch([detail.id], { trashed: false })}>Восстановить</button>
+              ) : (
+                <>
+                  {detail.status !== 'processing' && detail.status !== 'queued' && detail.status !== 'error' && (
+                    <button className="btn-p t-btn2" onClick={() => setViewing(detail)}>Открыть документ</button>
+                  )}
+                  <div className="hstack hstack--8" style={{ flexWrap: 'nowrap' }}>
+                    {detail.status !== 'processing' && detail.status !== 'queued' && (
+                      <button className="ghost t-btn2 fm__grow" onClick={() => startReplace(detail.id)}>Заменить версию</button>
+                    )}
+                    <button className="ghost t-btn2 fm__del" aria-label="Удалить" onClick={() => setDeleting([detail])}><Icon name="trash" size={16} /></button>
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <p className="fm__hint t-b25 c3">Выберите документ, чтобы увидеть сведения.</p>
+          )}
+        </aside>
       </div>
 
       {/* загрузка: проверка предложенных значений */}
