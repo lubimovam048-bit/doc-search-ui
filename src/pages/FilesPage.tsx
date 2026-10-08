@@ -275,7 +275,7 @@ export default function FilesPage() {
                     {detail.status !== 'processing' && detail.status !== 'queued' && (
                       <button className="ghost t-btn2 fm__grow" onClick={() => startReplace(detail.id)}>Заменить версию</button>
                     )}
-                    <button className="ghost t-btn2 fm__del" aria-label="Удалить" onClick={() => setDeleting([detail])}><Icon name="trash" size={16} /></button>
+                    <button className="ghost t-btn2 fm__del" aria-label="Удалить" onClick={() => setDeleting([detail])}><Icon name="trash" size={20} /></button>
                   </div>
                 </>
               )}
