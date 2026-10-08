@@ -271,7 +271,7 @@ export default function FilesPage() {
                   {detail.status !== 'processing' && detail.status !== 'queued' && detail.status !== 'error' && (
                     <button className="btn-p t-btn2" onClick={() => setViewing(detail)}>Открыть документ</button>
                   )}
-                  <div className="hstack hstack--8" style={{ flexWrap: 'nowrap' }}>
+                  <div className="fm__actions">
                     {detail.status !== 'processing' && detail.status !== 'queued' && (
                       <button className="ghost t-btn2 fm__grow" onClick={() => startReplace(detail.id)}>Заменить версию</button>
                     )}

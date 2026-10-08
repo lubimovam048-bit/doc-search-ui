@@ -202,7 +202,9 @@ tr:hover .row-more, tr:focus-within .row-more { opacity: 0; }
 .fm__facts dd { margin: 0; display: flex; align-items: baseline; gap: 6px; }
 .fm__facts .dot { transform: translateY(-1px); }
 .fm__grow { flex: 1; }
-.fm__del { width: 40px; padding: 0; display: grid; place-items: center; color: var(--er-color-danger, #b43b51); }
+.fm__actions { display: flex; align-items: stretch; gap: 8px; }
+.fm__del { flex: none; align-self: stretch; width: 48px; padding: 0; display: grid; place-items: center; color: var(--er-color-danger); }
+.fm__del:hover { background: var(--er-color-danger-soft); border-color: var(--er-color-danger); color: var(--er-color-danger); }
 .fm__hint { margin: 0; }
 @media (max-width: 1280px) { .fm__detail { display: none; } }
 @media (max-width: 900px) {
