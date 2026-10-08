@@ -1,3 +1,4 @@
+import Icon from '../../components/Icon';
 import { RESP_TABLE } from '../../data/sources';
 import type { Source } from '../../data/types';
 
@@ -62,9 +63,11 @@ export default function SourceCards({ sources, activeId, onOpen }: Props) {
             )}
             {s.note && <span className="scard__note">{s.note}</span>}
             {!del && (
-              <button className="scard__open" onClick={() => onOpen(s.id)}>
-                {pg ? `Открыть на стр. ${pg}` : 'Открыть документ'}
-              </button>
+              <div className="scard__foot">
+                <button className="scard__btn" onClick={() => onOpen(s.id)}>
+                  <Icon name="doc" size={16} />{pg ? `Открыть документ · стр. ${pg}` : 'Открыть документ'}
+                </button>
+              </div>
             )}
           </article>
         );

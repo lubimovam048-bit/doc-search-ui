@@ -11,7 +11,7 @@ import {
   DivergeAnswer, EmptyAnswer, ListAnswer, StatusAnswer, SummaryAnswer, TableAnswer,
 } from '../features/search/AnswerViews';
 import SourceCards from '../features/search/SourceCards';
-import SourceViewer from '../features/search/SourceViewer';
+import DocPane from '../features/search/DocPane';
 
 const FEEDBACK_TEXT: Record<string, string> = {
   copied: 'Ответ скопирован.',
@@ -50,6 +50,7 @@ export default function AnswerPage() {
     setOpenId(sid);
     document.getElementById(`src-${sid}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
+  const openDoc = (sid: string) => { setOpenId(sid); setViewId(sid); };
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(answerRef.current?.innerText ?? '');
@@ -62,7 +63,7 @@ export default function AnswerPage() {
   const docsText = sources.length === 1 ? 'в 1 документе' : `в ${sources.length} документах`;
 
   const cite = (sid: string, label: string) => (
-    <Cite n={indexOf(sid)} label={label} active={openId === sid} deleted={SOURCES[sid].kind === 'deleted'} onClick={() => pick(sid)} />
+    <Cite n={indexOf(sid)} label={label} active={openId === sid} deleted={SOURCES[sid].kind === 'deleted'} onClick={() => pick(sid)} onOpen={() => openDoc(sid)} />
   );
 
   const view = (() => {
@@ -85,7 +86,7 @@ export default function AnswerPage() {
   })();
 
   return (
-    <main className="main main--answer">
+    <main className={`main main--answer${viewing ? ' main--doc' : ''}`}>
       <div className="ans">
         <div className="ans__q">{entry.query}</div>
 
@@ -97,7 +98,7 @@ export default function AnswerPage() {
 
         <div ref={answerRef}>{view}</div>
 
-        <SourceCards sources={sources} activeId={openId} onOpen={setViewId} />
+        <SourceCards sources={sources} activeId={openId} onOpen={openDoc} />
 
         {scenario.id !== 'empty' && (
           <div className="feedback">
@@ -127,7 +128,14 @@ export default function AnswerPage() {
         </div>
       </div>
 
-      {viewing && <SourceViewer source={viewing} onClose={() => setViewId(null)} />}
+      {viewing && (
+        <DocPane
+          sources={sources.filter((x) => x.kind !== 'deleted')}
+          current={viewing}
+          onSelect={openDoc}
+          onClose={() => setViewId(null)}
+        />
+      )}
     </main>
   );
 }

@@ -122,8 +122,6 @@
 .scard__key { color: var(--er-color-text); }
 .scard__warn { color: var(--er-color-danger); font-size: 14px; }
 .scard__note { padding: 4px 18px 0; font-size: 13px; color: var(--er-color-warning); }
-.scard__open { align-self: flex-start; margin: 8px 18px 14px; padding: 0; border: 0; background: transparent; font-size: 14px; font-weight: 500; color: var(--er-color-primary); }
-.scard__open:hover { color: var(--er-color-primary-hover); text-decoration: underline; }
 .scard .src__table { display: block; background: #fff; }
 
 .followups { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
@@ -133,3 +131,36 @@
 .ans .composer { margin-top: auto; }
 @media (max-width: 900px) { .ans { padding: 64px 16px 0; } .timeline__item { grid-template-columns: 44px 18px minmax(0, 1fr); } .timeline__item::before { left: 64px; } }
 .ans .composer { background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0, #fff 30px); }
+
+/* ---------- Документ справа от ответа ---------- */
+.cite-wrap { display: inline-flex; align-items: center; gap: 6px; }
+.cite__open { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--er-color-border); border-radius: 50%; background: #fff; color: var(--er-color-primary); transition: border-color .15s, background-color .15s; }
+.cite__open:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
+.scard__foot { padding: 4px 18px 16px; }
+.scard__btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #b9cdf5; border-radius: 10px; background: #fff; font-size: 14px; font-weight: 500; color: var(--er-color-primary-hover); transition: background-color .15s, border-color .15s; }
+.scard__btn:hover { background: #f4f7fe; border-color: var(--er-color-primary); }
+
+.main--doc { flex-direction: row; align-items: stretch; }
+.main--doc .ans { margin: 0; flex: 1 1 0; min-width: 0; max-width: none; padding-left: 40px; padding-right: 40px; }
+.docpane { flex: 0 0 min(600px, 46vw); position: sticky; top: 0; align-self: flex-start; height: 100vh; display: flex; flex-direction: column; border-left: 1px solid #e4eaf4; background: #fff; animation: rise var(--t-switch) var(--ease) backwards; }
+.docpane__head { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #e4eaf4; }
+.docpane__titles { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.docpane__titles b { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.docpane__titles span { font-size: 13px; color: var(--er-color-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.docpane__tools { display: flex; gap: 8px; }
+.docpane__tools button { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid #d5deec; border-radius: 10px; background: #fff; color: var(--er-color-text); }
+.docpane__tools button:hover, .docpane__tools button[aria-pressed='true'] { background: #f4f7fe; border-color: var(--er-color-primary); }
+.docpane__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px 28px 32px; background: #f6f8fc; }
+.docpage { min-height: 560px; padding: 20px 40px 36px; border-radius: 4px; background: #fff; box-shadow: 0 8px 30px rgba(32, 52, 81, .10); font-family: 'Times New Roman', Georgia, serif; font-size: 15px; line-height: 25px; text-align: justify; display: flex; flex-direction: column; gap: 14px; }
+.docpage--big { font-size: 18px; line-height: 30px; }
+.docpage p { margin: 0; }
+.docpage__top { display: flex; align-items: center; justify-content: space-between; font-family: 'Onest', sans-serif; }
+.docpage__no { font-size: 11px; letter-spacing: .08em; color: #8a99ae; }
+.docpage__found { padding: 4px 12px; border-radius: 999px; background: #e8effc; color: var(--er-color-primary-hover); font-size: 13px; }
+.docpage__title { margin: 6px 0 4px; font-size: 16px; font-weight: 700; text-align: center; }
+.docpage mark { background: #cddcfa; color: inherit; padding: 1px 0; }
+.docpage__hint { margin-top: auto; font-family: 'Onest', sans-serif; font-size: 12px; color: #8a99ae; text-align: center; }
+@media (max-width: 1100px) {
+  .docpane { position: fixed; inset: 0; z-index: 45; height: auto; flex: none; width: 100%; }
+  .main--doc .ans { padding-left: 24px; padding-right: 24px; }
+}
