@@ -132,3 +132,4 @@
 .followups__chip:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
 .ans .composer { margin-top: auto; }
 @media (max-width: 900px) { .ans { padding: 64px 16px 0; } .timeline__item { grid-template-columns: 44px 18px minmax(0, 1fr); } .timeline__item::before { left: 55px; } }
+.ans .composer { background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0, #fff 30px); }
