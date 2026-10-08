@@ -6,7 +6,7 @@ interface Props {
   onClick: () => void;
 }
 
-/** Сноска-плашка: номер источника + подпись. Клик открывает и подсвечивает карточку справа. */
+/** Сноска-плашка: номер источника + подпись. Клик подсвечивает карточку источника под ответом. */
 export default function Cite({ n, label, active, deleted, onClick }: Props) {
   return (
     <button className={`cite${active ? ' cite--on' : ''}`} onClick={onClick}>

@@ -25,7 +25,7 @@ export function ListAnswer({ openId, onPick, indexOf }: { openId: string | null;
           <div className="stack stack--8" style={{ minWidth: 0, flex: 1 }}>
             <span className="t-b1 c1">{SOURCES[d.id].title}</span>
             <span className="t-blog c2">{d.why}</span>
-            <div><button className="btn-link t-btn2" onClick={() => onPick(d.id)}>Показать фрагмент в источниках</button></div>
+            <div><button className="btn-link t-btn2" onClick={() => onPick(d.id)}>Перейти к источнику</button></div>
           </div>
         </div>
       ))}
@@ -35,15 +35,16 @@ export function ListAnswer({ openId, onPick, indexOf }: { openId: string | null;
 
 /* 2. Сводка с постатейными сносками (и вариант «источник удалён») */
 export function SummaryAnswer({ deleted, cite }: { deleted: boolean; cite: RenderCite }) {
+  // хронология по датам документов-источников
   const items = deleted
     ? [
-        { text: 'Основание перрона выполнено по проекту, работы приняты 10.09.2026.', id: 's_del', label: 'Акт приёмки № 12 · документ удалён' },
-        { text: 'Организована приёмка металлоконструкций на площадке в две смены, ответственный — начальник участка № 2.', id: 's_prot2', label: 'Протокол штаба от 25.09.2026, стр. 2' },
+        { date: '10.09', text: 'Основание перрона выполнено по проекту, работы приняты.', id: 's_del', label: 'Акт приёмки № 12 · документ удалён' },
+        { date: '25.09', text: 'Организована приёмка металлоконструкций на площадке в две смены, ответственный — начальник участка № 2.', id: 's_prot2', label: 'Протокол штаба от 25.09.2026, стр. 2' },
       ]
     : [
-        { text: 'Поставка металлоконструкций перенесена с 15.09.2026 на 30.09.2026 по дополнительному соглашению № 3.', id: 's_rep7', label: 'Отчёт за сентябрь 2026, стр. 7' },
-        { text: 'Организована приёмка металлоконструкций на площадке в две смены, ответственный — начальник участка № 2.', id: 's_prot2', label: 'Протокол штаба от 25.09.2026, стр. 2' },
-        { text: 'Подрядчику направлено уведомление о начислении неустойки за просрочку поставки.', id: 's_letter', label: 'Письмо № 118 от 22.09.2026, стр. 1' },
+        { date: '22.09', text: 'Подрядчику направлено уведомление о начислении неустойки за просрочку поставки.', id: 's_letter', label: 'Письмо № 118 от 22.09.2026, стр. 1' },
+        { date: '25.09', text: 'Организована приёмка металлоконструкций на площадке в две смены, ответственный — начальник участка № 2.', id: 's_prot2', label: 'Протокол штаба от 25.09.2026, стр. 2' },
+        { date: '03.10', text: 'Поставка металлоконструкций перенесена с 15.09.2026 на 30.09.2026 по дополнительному соглашению № 3. Отставание от плана — 15 дней.', id: 's_rep7', label: 'Отчёт за сентябрь 2026, стр. 7' },
       ];
   return (
     <div className="answer">
@@ -59,20 +60,21 @@ export function SummaryAnswer({ deleted, cite }: { deleted: boolean; cite: Rende
           </div>
         </div>
       )}
-      <p className="t-blog c2 lead">
-        {deleted
-          ? 'По результатам анализа документов по подготовке основания перрона приняты следующие меры:'
-          : 'По результатам анализа документов по задержке поставки металлоконструкций приняты следующие меры:'}
-      </p>
-      {items.map((it, i) => (
-        <div key={it.id} className="row rise">
-          <span className="item-num">{i + 1}</span>
-          <div className="stack stack--12" style={{ minWidth: 0 }}>
-            <span className="t-blog c2">{it.text}</span>
-            <div>{cite(it.id, it.label)}</div>
-          </div>
-        </div>
-      ))}
+      <h2 className="ans-title">
+        {deleted ? 'Основание перрона: что сделано' : 'По задержке поставки приняты три меры'}
+      </h2>
+      <ol className="timeline">
+        {items.map((it) => (
+          <li key={it.id} className="timeline__item rise">
+            <span className="timeline__date">{it.date}</span>
+            <span className="timeline__dot" aria-hidden="true" />
+            <div className="stack stack--12" style={{ minWidth: 0 }}>
+              <span className="t-blog c2">{it.text}</span>
+              <div>{cite(it.id, it.label)}</div>
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
@@ -96,7 +98,7 @@ export function TableAnswer({ cite }: { cite: RenderCite }) {
         <div>{cite('s_resp', 'Таблица ответственных, стр. 2')}</div>
       </div>
       <span className="t-b25 c3">
-        Ответ взят из одной строки таблицы. Она выделена в источниках справа: проверьте вид работ и заголовки столбцов.
+        Ответ взят из одной строки таблицы. Она выделена в источнике ниже: проверьте вид работ и заголовки столбцов.
       </span>
     </div>
   );

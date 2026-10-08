@@ -10,6 +10,8 @@ export interface Source {
   before?: string;
   frag?: string;
   after?: string;
+  /** Предупреждение о качестве источника, например скан. */
+  note?: string;
 }
 
 export type AnswerType = 'list' | 'summary' | 'table' | 'status' | 'diverge' | 'empty' | 'deleted';

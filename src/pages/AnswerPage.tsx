@@ -1,18 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import Cite from '../components/Cite';
 import Icon from '../components/Icon';
 import SearchField from '../components/SearchField';
 import { useApp } from '../context/AppContext';
 import { DEFAULT_FILTERS, describeScope } from '../data/filters';
-import { SCENARIOS } from '../data/scenarios';
+import { FOLLOW_UPS, SCENARIOS } from '../data/scenarios';
 import { SOURCES } from '../data/sources';
 import {
   DivergeAnswer, EmptyAnswer, ListAnswer, StatusAnswer, SummaryAnswer, TableAnswer,
 } from '../features/search/AnswerViews';
-import SourcesPanel from '../features/search/SourcesPanel';
+import SourceCards from '../features/search/SourceCards';
+import SourceViewer from '../features/search/SourceViewer';
 
 const FEEDBACK_TEXT: Record<string, string> = {
+  copied: 'Ответ скопирован.',
+  copyfail: 'Не удалось скопировать. Выделите текст вручную.',
   ok: 'Спасибо, оценка сохранена.',
   bad: 'Спасибо, отметка «неточно» сохранена.',
   src: 'Спасибо, отметка «источник не тот» передана администратору.',
@@ -28,13 +31,14 @@ export default function AnswerPage() {
 
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [viewId, setViewId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState('');
+  const answerRef = useRef<HTMLDivElement>(null);
 
   // при переходе к другому запросу раскрываем первый источник и сбрасываем оценку
   useEffect(() => {
-    setOpenId(scenario?.sources[0] ?? null);
-    setPanelOpen(true);
+    setOpenId(null);
+    setViewId(null);
     setFeedback('');
   }, [id, scenario]);
 
@@ -42,7 +46,20 @@ export default function AnswerPage() {
 
   const sources = scenario.sources.map((sid) => SOURCES[sid]);
   const indexOf = (sid: string) => scenario.sources.indexOf(sid) + 1;
-  const pick = (sid: string) => { setOpenId(sid); setPanelOpen(true); };
+  const pick = (sid: string) => {
+    setOpenId(sid);
+    document.getElementById(`src-${sid}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(answerRef.current?.innerText ?? '');
+      setFeedback('copied');
+    } catch {
+      setFeedback('copyfail');
+    }
+  };
+  const viewing = sources.find((x) => x.id === viewId) ?? null;
+  const docsText = sources.length === 1 ? 'в 1 документе' : `в ${sources.length} документах`;
 
   const cite = (sid: string, label: string) => (
     <Cite n={indexOf(sid)} label={label} active={openId === sid} deleted={SOURCES[sid].kind === 'deleted'} onClick={() => pick(sid)} />
@@ -68,55 +85,49 @@ export default function AnswerPage() {
   })();
 
   return (
-    <>
-      <main className="main">
-        {!panelOpen && sources.length > 0 && (
-          <div className="hstack" style={{ justifyContent: 'flex-end' }}>
-            <button className="ghost t-btn2 hstack hstack--8" onClick={() => setPanelOpen(true)} style={{ flexWrap: 'nowrap' }}>
-              <Icon name="layers" size={16} />Источники · {sources.length}
+    <main className="main main--answer">
+      <div className="ans">
+        <div className="ans__q">{entry.query}</div>
+
+        <div className="ans__trust">
+          <span className="ans__type">{scenario.type}</span>
+          {sources.length > 0 && <span>Найдено {docsText}</span>}
+          {scenario.asOf && <span>{scenario.asOf}</span>}
+        </div>
+
+        <div ref={answerRef}>{view}</div>
+
+        <SourceCards sources={sources} activeId={openId} onOpen={setViewId} />
+
+        {scenario.id !== 'empty' && (
+          <div className="feedback">
+            <button className="ghost t-btn2 hstack hstack--8" style={{ flexWrap: 'nowrap' }} onClick={copy}>
+              <Icon name="doc" size={16} />Копировать
             </button>
+            <span className="t-b25 c3" style={{ margin: '0 4px 0 8px' }}>Оценить ответ</span>
+            <button className="ghost t-btn2" onClick={() => setFeedback('ok')}>Полезно</button>
+            <button className="ghost t-btn2" onClick={() => setFeedback('bad')}>Неточно</button>
+            <button className="btn-text t-btn2" onClick={() => setFeedback('src')}>Источник не тот</button>
           </div>
         )}
+        {feedback && <span className="t-b25 cg" role="status">{FEEDBACK_TEXT[feedback]}</span>}
 
-        <div className="stack stack--4" style={{ paddingTop: 8 }}>
-          <span className="t-cap1 c3">Вопрос</span>
-          <span className="t-sub2 c1">{entry.query}</span>
-        </div>
-        <div className="hstack hstack--12">
-          <span className="t-b25 c2">{scenario.type}</span>
-          {scenario.asOf && <span className="t-b25 c3">· {scenario.asOf}</span>}
-        </div>
-        <span className="t-cap1 c3" style={{ marginTop: -8 }}>Запрос понят как: {scenario.understood}</span>
-
-        {view}
-
-        <div className="feedback">
-          {scenario.id !== 'empty' && (
-            <>
-              <span className="t-b25 c3" style={{ marginRight: 4 }}>Оценить ответ</span>
-              <button className="ghost t-btn2" onClick={() => setFeedback('ok')}>Полезно</button>
-              <button className="ghost t-btn2" onClick={() => setFeedback('bad')}>Неточно</button>
-              <button className="btn-text t-btn2" onClick={() => setFeedback('src')}>Источник не тот</button>
-            </>
-          )}
-          {feedback && <span className="t-b25 cg" role="status">{FEEDBACK_TEXT[feedback]}</span>}
+        <div className="followups" aria-label="Что спросить дальше">
+          <span className="t-b25 c3">Что спросить дальше</span>
+          <div className="followups__list">
+            {FOLLOW_UPS[scenario.id].map((q) => (
+              <button key={q} className="followups__chip" onClick={() => navigate(`/q/${ask(q).id}`)}>{q}</button>
+            ))}
+          </div>
         </div>
 
         <div className="composer">
           <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} />
           <span className="t-cap1 c3 composer__note">Запросы сохраняются и доступны администратору.</span>
         </div>
-      </main>
+      </div>
 
-      {panelOpen && (
-        <SourcesPanel
-          sources={sources}
-          openId={openId}
-          onToggle={(sid) => setOpenId((cur) => (cur === sid ? null : sid))}
-          onCollapseAll={() => setOpenId(null)}
-          onClose={() => setPanelOpen(false)}
-        />
-      )}
-    </>
+      {viewing && <SourceViewer source={viewing} onClose={() => setViewId(null)} />}
+    </main>
   );
 }
