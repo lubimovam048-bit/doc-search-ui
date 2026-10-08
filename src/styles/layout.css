@@ -156,7 +156,7 @@
 .welcome__hero { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: var(--space-6); text-align: center; }
 .welcome__tag { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; padding: 4px 12px; border: 1px solid var(--er-color-border); border-radius: var(--radius-pill); background: #fff; font-size: 13px; line-height: 20px; color: var(--er-color-muted); }
 .welcome__tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--er-color-success); }
-.welcome__title { margin: 0; font-size: 46px; line-height: 52px; letter-spacing: -0.025em; }
+.welcome__title { margin: 0; font-size: 54px; line-height: 60px; letter-spacing: -0.025em; }
 .welcome__lead { margin: 14px 0 0; max-width: 520px; font-size: 17px; line-height: 26px; color: var(--er-color-muted); }
 .hints { display: flex; gap: 56px; margin-top: 34px; width: 100%; max-width: 720px; text-align: left; }
 .hint { flex: 1; display: flex; gap: 12px; }

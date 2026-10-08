@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import SearchField from '../components/SearchField';
 import WelcomeBackground, { type WelcomeBackgroundHandle } from '../components/WelcomeBackground';
 import { useApp } from '../context/AppContext';
-import { EXAMPLE_QUERIES } from '../data/scenarios';
+
+const CARDS = [
+  'Какие последние изменения внёс Шилов А. В.?',
+  'Найди все документы по объекту за последние 2 месяца',
+  'Что решили по срокам поставки металлоконструкций?',
+];
 
 /** Стартовый экран: один вопрос, одно поле. */
 export default function HomePage() {
@@ -18,11 +23,10 @@ export default function HomePage() {
     <main className="welcome">
       <WelcomeBackground ref={bg} />
       <div className="welcome__hero">
-        <h1 className="welcome__title">Найдите ответ<br />в документах</h1>
-        <p className="welcome__lead">Задайте вопрос своими словами. Каждый ответ со ссылкой на документ-источник.</p>
+        <h1 className="welcome__title">Ваш ИИ-помощник<br />вместо сотни страниц</h1>
 
         <div className="qcards">
-          {EXAMPLE_QUERIES.slice(0, 3).map((q) => (
+          {CARDS.map((q) => (
             <button key={q} type="button" className="qcard" onClick={() => { bg.current?.pulse(false); go(q); }}>{q}</button>
           ))}
         </div>
