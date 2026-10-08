@@ -15,13 +15,15 @@ interface Props {
   onActivate: (id: string) => void;
   onOpen: (id: string) => void;
   onCloseTab: (id: string) => void;
+  /** Свернуть всю правую часть, вкладки сохраняются. */
+  onHide: () => void;
 }
 
 const pageInfo = (s: Source) => /стр\.\s*(\d+)\s*из\s*(\d+)/.exec(s.meta);
 const ext = (s: Source) => (s.kind === 'table' ? 'XLS' : 'PDF');
 
 /** Правая часть: вкладки «Список» и открытые документы. У каждой вкладки документа свой крестик. */
-export default function DocPane({ sources, tabs, active, onActivate, onOpen, onCloseTab }: Props) {
+export default function DocPane({ sources, tabs, active, onActivate, onOpen, onCloseTab, onHide }: Props) {
   const [big, setBig] = useState(false);
   const current = sources.find((x) => x.id === active) ?? null;
   const pg = current ? pageInfo(current) : null;
@@ -50,6 +52,9 @@ export default function DocPane({ sources, tabs, active, onActivate, onOpen, onC
             </span>
           );
         })}
+        <button className="dtabs__hide" onClick={onHide} aria-label="Свернуть документы" title="Свернуть">
+          <Icon name="expand" size={16} />Свернуть
+        </button>
       </div>
 
       {active === LIST_TAB && (

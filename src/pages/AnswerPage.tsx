@@ -33,6 +33,7 @@ export default function AnswerPage() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [tabs, setTabs] = useState<string[]>([]);
   const [active, setActive] = useState<string>(LIST_TAB);
+  const [hidden, setHidden] = useState(false);
   const [feedback, setFeedback] = useState('');
   const answerRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +42,7 @@ export default function AnswerPage() {
     setOpenId(null);
     setTabs([]);
     setActive(LIST_TAB);
+    setHidden(false);
     setFeedback('');
   }, [id, scenario]);
 
@@ -53,6 +55,7 @@ export default function AnswerPage() {
     document.getElementById(`src-${sid}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
   const openDoc = (sid: string) => {
+    setHidden(false);
     setOpenId(sid);
     setTabs((t) => (t.includes(sid) ? t : [...t, sid]));
     setActive(sid);
@@ -61,6 +64,7 @@ export default function AnswerPage() {
   const closeTab = (sid: string) => {
     const rest = tabs.filter((x) => x !== sid);
     setTabs(rest);
+    if (rest.length === 0) setHidden(false);
     if (active === sid) {
       const i = tabs.indexOf(sid);
       const next = rest[i] ?? rest[i - 1] ?? LIST_TAB;
@@ -76,7 +80,7 @@ export default function AnswerPage() {
       setFeedback('copyfail');
     }
   };
-  const viewing = tabs.length > 0;
+  const viewing = tabs.length > 0 && !hidden;
   const docsText = sources.length === 1 ? 'в 1 документе' : `в ${sources.length} документах`;
 
   const cite = (sid: string, label: string) => (
@@ -105,6 +109,13 @@ export default function AnswerPage() {
   return (
     <main className={`main main--answer${viewing ? ' main--doc' : ''}`}>
       <div className="ans">
+        {hidden && tabs.length > 0 && (
+          <div className="ans__restore">
+            <button className="ghost t-btn2 hstack hstack--8" style={{ flexWrap: 'nowrap' }} onClick={() => setHidden(false)}>
+              <Icon name="layers" size={16} />Документы · {tabs.length}
+            </button>
+          </div>
+        )}
         <div className="ans__q">{entry.query}</div>
 
         <div className="ans__trust">
@@ -153,6 +164,7 @@ export default function AnswerPage() {
           onActivate={activate}
           onOpen={openDoc}
           onCloseTab={closeTab}
+          onHide={() => setHidden(true)}
         />
       )}
     </main>
