@@ -1,33 +1,42 @@
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Icon from '../components/Icon';
 import SearchField from '../components/SearchField';
+import WelcomeBackground, { type WelcomeBackgroundHandle } from '../components/WelcomeBackground';
 import { useApp } from '../context/AppContext';
+import { EXAMPLE_QUERIES } from '../data/scenarios';
 
 /** Стартовый экран: один вопрос, одно поле. */
 export default function HomePage() {
   const { ask } = useApp();
   const navigate = useNavigate();
+  const bg = useRef<WelcomeBackgroundHandle>(null);
+  const lastInput = useRef(0);
+
+  const go = (q: string) => navigate(`/q/${ask(q).id}`);
 
   return (
     <main className="welcome">
+      <WelcomeBackground ref={bg} />
       <div className="welcome__hero">
-        <span className="welcome__tag"><i />Ответы только по загруженным документам</span>
         <h1 className="welcome__title">Найдите ответ<br />в документах</h1>
         <p className="welcome__lead">Задайте вопрос своими словами. Каждый ответ со ссылкой на документ-источник.</p>
 
-        <div className="welcome__composer">
-          <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} autoFocus />
+        <div className="qcards">
+          {EXAMPLE_QUERIES.slice(0, 3).map((q) => (
+            <button key={q} type="button" className="qcard" onClick={() => { bg.current?.pulse(false); go(q); }}>{q}</button>
+          ))}
         </div>
 
-        <div className="hints">
-          <div className="hint">
-            <Icon name="help" size={22} stroke={1.5} />
-            <div><b>Как спрашивать</b><span>Обычными словами или номером приказа. Название объекта указывать необязательно.</span></div>
-          </div>
-          <div className="hint">
-            <Icon name="link" size={22} stroke={1.5} />
-            <div><b>Откуда ответ</b><span>Рядом с каждым фактом номер источника. Нажмите, чтобы открыть документ.</span></div>
-          </div>
+        <div
+          className="welcome__composer"
+          onInput={() => {
+            const n = performance.now();
+            if (n - lastInput.current > 420) { lastInput.current = n; bg.current?.pulse(false); }
+          }}
+          onFocus={() => bg.current?.pulse(false)}
+          onSubmit={() => bg.current?.pulse(true)}
+        >
+          <SearchField onSubmit={go} autoFocus />
         </div>
       </div>
       <span className="t-cap1 c3 welcome__note">Запросы сохраняются и доступны администратору.</span>

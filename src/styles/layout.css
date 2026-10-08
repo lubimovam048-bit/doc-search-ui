@@ -152,8 +152,8 @@
 @keyframes caret { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 
 /* ---------- стартовый экран ---------- */
-.welcome { flex: 999 1 520px; min-width: 0; min-height: calc(100vh - 60px); display: flex; flex-direction: column; padding: var(--space-8) var(--space-10) var(--space-8); }
-.welcome__hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: var(--space-10); text-align: center; }
+.welcome { position: relative; overflow: hidden; background: #fff; flex: 999 1 520px; min-width: 0; min-height: calc(100vh - 60px); display: flex; flex-direction: column; padding: var(--space-8) var(--space-10) var(--space-8); }
+.welcome__hero { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: var(--space-6); text-align: center; }
 .welcome__tag { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; padding: 4px 12px; border: 1px solid var(--er-color-border); border-radius: var(--radius-pill); background: #fff; font-size: 13px; line-height: 20px; color: var(--er-color-muted); }
 .welcome__tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--er-color-success); }
 .welcome__title { margin: 0; font-size: 46px; line-height: 52px; letter-spacing: -0.025em; }
@@ -164,7 +164,7 @@
 .hint b { display: block; font-size: 14px; line-height: 20px; font-weight: 600; }
 .hint span { font-size: 13px; line-height: 19px; color: var(--er-color-muted); }
 .welcome__composer { width: 100%; max-width: 720px; margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
-.welcome__note { text-align: center; }
+.welcome__note { position: relative; z-index: 1; text-align: center; }
 .chips-unused { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: var(--space-2); max-width: 720px; }
 .chip { border: 1px solid var(--er-color-border-strong); background: var(--er-color-surface); color: var(--er-color-text); border-radius: var(--radius-pill); padding: 8px 16px; font-size: 14px; line-height: 20px; font-weight: 500; transition: background-color var(--t-response), border-color var(--t-response); }
 .chip:hover { background: var(--er-color-primary-soft); border-color: var(--er-color-primary); color: var(--er-color-primary-hover); }
