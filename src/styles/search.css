@@ -190,20 +190,25 @@
 .dtabs__hide--second { margin-left: 0; }
 
 /* ---------- Уточнение запроса ---------- */
-.clar { display: flex; flex-direction: column; gap: 14px; padding: 22px 24px; border: 1px solid #cdd9f1; border-radius: 16px; background: #f7f9fe; animation: rise var(--t-switch) var(--ease) backwards; }
-.clar__head { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
-.clar__lead { color: var(--er-color-primary-hover); font-weight: 500; }
-.clar__step { color: var(--er-color-subtle); }
-.clar__q { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
-.clar__opts { display: flex; flex-wrap: wrap; gap: 8px; }
-.clar__opt { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 16px 0 12px; border: 1px solid #d5deec; border-radius: 12px; background: #fff; font-size: 15px; text-align: left; color: var(--er-color-text); transition: border-color .15s, background-color .15s; }
-.clar__opt:hover { border-color: var(--er-color-primary); }
-.clar__opt--on { border-color: var(--er-color-primary); background: #eaf1ff; color: var(--er-color-primary-hover); font-weight: 500; }
-.clar__radio { flex: none; display: grid; place-items: center; width: 18px; height: 18px; border: 1.5px solid #b6c4de; border-radius: 50%; background: #fff; color: #fff; }
-.clar__opt--on .clar__radio { border-color: var(--er-color-primary); background: var(--er-color-primary); }
-.clar__own { height: 42px; padding: 0 14px; border: 1px solid var(--er-color-primary); border-radius: 12px; font-size: 15px; outline: 0; background: #fff; }
-.clar__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-top: 4px; }
-.clar__skip { margin-left: auto; }
+.clar { display: flex; flex-direction: column; gap: 14px; padding: 20px 22px 18px; border: 1px solid #d5deec; border-radius: 16px; background: #fff; box-shadow: 0 6px 24px rgba(32, 52, 81, .07); animation: rise var(--t-switch) var(--ease) backwards; }
+.clar__head { display: flex; align-items: center; justify-content: space-between; }
+.clar__tag { padding: 3px 10px; border-radius: 6px; background: #eef2fa; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--er-color-muted); }
+.clar__step { font-size: 13px; color: var(--er-color-subtle); }
+.clar__q { margin: 0; font-size: 18px; line-height: 26px; font-weight: 600; }
+.clar__list { display: flex; flex-direction: column; gap: 6px; }
+.clar__row { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 56px; padding: 10px 14px; border: 1px solid #e4eaf4; border-radius: 12px; background: #fff; text-align: left; transition: border-color .15s, background-color .15s; cursor: pointer; }
+.clar__row:hover { border-color: #b9cdf5; background: #f9fbff; }
+.clar__row--on, .clar__row--on:hover { border-color: var(--er-color-primary); background: #f0f5ff; }
+.clar__n { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: #eef2fa; font-size: 13px; font-weight: 600; color: var(--er-color-muted); }
+.clar__row--on .clar__n { background: var(--er-color-primary); color: #fff; }
+.clar__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--er-color-muted); }
+.clar__text b { font-size: 15px; font-weight: 500; color: var(--er-color-text); }
+.clar__check { flex: none; color: var(--er-color-primary); }
+.clar__own { width: 100%; height: 30px; margin-top: 2px; padding: 0 10px; border: 1px solid #b9cdf5; border-radius: 8px; background: #fff; font-size: 14px; outline: 0; }
+.clar__own:focus { border-color: var(--er-color-primary); }
+.clar__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 4px; }
+.clar__keys { margin-right: auto; font-size: 12px; color: var(--er-color-subtle); }
+@media (max-width: 720px) { .clar__keys { display: none; } }
 .ans__scope { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--er-color-muted); }
 .ans__scope button { border: 0; background: transparent; padding: 0; font-size: 14px; color: var(--er-color-primary); }
 .ans__scope button:hover { text-decoration: underline; }
