@@ -120,7 +120,7 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
     W = r.width || 1;
     H = r.height || 1;
     k = clamp(W / DESIGN_W, 0.55, 1.3);
-    cardY = H * 0.5;
+    cardY = H - 56; // центр карточки на верхней кромке плашки: нижняя половина под стеклом
     ring.style.perspective = `${R0 * k}px`;
     ring.style.perspectiveOrigin = `${W / 2}px ${cardY + 320 * k}px`;
     cards.forEach((c) => { c.style.left = `${W / 2}px`; c.style.top = `${cardY}px`; });

@@ -1,7 +1,7 @@
 /* ---------- кольцо документов на стартовом экране ---------- */
 .welcome__ring { position: relative; z-index: 2; flex: 1 1 0; min-height: 260px; pointer-events: none; }
 .ring3d { position: absolute; inset: 0; transform-style: preserve-3d; }
-.rc { position: absolute; width: 150px; height: 212px; margin: -106px 0 0 -75px; border-radius: 8px; background: #fff; overflow: hidden; box-shadow: 0 18px 38px rgba(36, 60, 120, .22), 0 2px 6px rgba(36, 60, 120, .14); backface-visibility: hidden; will-change: transform, opacity; color: #1f2a3d; font-family: 'Times New Roman', Georgia, serif; }
+.rc { position: absolute; width: 150px; height: 212px; margin: -106px 0 0 -75px; border-radius: 8px; background: #fff; overflow: hidden; box-shadow: 0 8px 28px rgba(36, 60, 120, .09), 0 1px 3px rgba(36, 60, 120, .06); backface-visibility: hidden; will-change: transform, opacity; color: #1f2a3d; font-family: 'Times New Roman', Georgia, serif; }
 .rc--burst { background: transparent; box-shadow: none; overflow: visible; transform-style: preserve-3d; }
 .rc__shard { position: absolute; inset: 0; background: #fff; backface-visibility: visible; will-change: transform, opacity; }
 .rc__in { position: absolute; inset: 0; padding: 12px; }
@@ -18,7 +18,7 @@
 
 /* белая полупрозрачная плашка с заголовком и поиском */
 .welcome__panel {
-  position: relative; z-index: 5; align-self: center; width: min(800px, 100%); margin-top: -92px;
+  position: relative; z-index: 5; align-self: center; width: min(800px, 100%); margin-top: -56px;
   display: flex; flex-direction: column; align-items: center; padding: 44px 40px 34px; text-align: center;
   border: 1px solid rgba(255, 255, 255, .85); border-radius: 30px;
   background: rgba(255, 255, 255, .66);
