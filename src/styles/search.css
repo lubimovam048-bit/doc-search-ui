@@ -187,12 +187,10 @@
 .dlist__n { font-size: 13px; color: var(--er-color-subtle); }
 .docpane__head { border-bottom: 0; padding-bottom: 6px; }
 
-.dtabs__hide { flex: none; display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px auto; padding: 0 12px; height: 32px; border: 1px solid #d5deec; border-radius: 10px; background: #fff; font-size: 13px; color: var(--er-color-text); }
+.dtabs__hide { flex: none; display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px 8px; padding: 0; width: 32px; justify-content: center; height: 32px; border: 1px solid #d5deec; border-radius: 10px; background: #fff; font-size: 13px; color: var(--er-color-text); }
 .dtabs__hide:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
 .ans__restore { position: sticky; top: 12px; z-index: 5; align-self: flex-end; margin-bottom: -8px; }
 
-.dtabs__hide--first { margin-left: 8px; }
-.dtabs__hide--second { margin-left: 0; }
 
 /* ---------- Уточнение запроса ---------- */
 .clar { display: flex; flex-direction: column; gap: 14px; padding: 20px 22px 18px; border: 1px solid #d5deec; border-radius: 16px; background: #fff; box-shadow: 0 6px 24px rgba(32, 52, 81, .07); animation: rise var(--t-switch) var(--ease) backwards; }
