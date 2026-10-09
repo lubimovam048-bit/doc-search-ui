@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyEvent, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from 'react';
 import Icon from '../../components/Icon';
 import type { Source } from '../../data/types';
 import { DocActions, DocSheet, ext, pageInfo } from './DocView';
@@ -37,6 +37,18 @@ export default function DocPane({ sources, tabs, active, onActivate, onOpen, onC
   const [width, setWidth] = useState<number | null>(loadWidth);
   const [drag, setDrag] = useState(false);
   const paneRef = useRef<HTMLElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+
+  // вертикальное колесо мыши листает вкладки вбок; трекпад и так умеет горизонтально
+  const onStripWheel = (e: ReactWheelEvent) => {
+    const el = stripRef.current;
+    if (el && Math.abs(e.deltaY) > Math.abs(e.deltaX)) el.scrollLeft += e.deltaY;
+  };
+
+  // активная вкладка всегда в зоне видимости
+  useEffect(() => {
+    stripRef.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  }, [active, tabs.length]);
   const current = sources.find((x) => x.id === active) ?? null;
 
   const startDrag = (e: ReactPointerEvent) => {
@@ -89,7 +101,8 @@ export default function DocPane({ sources, tabs, active, onActivate, onOpen, onC
         onDoubleClick={() => { setWidth(null); try { localStorage.removeItem(STORE); } catch { /* без сохранения */ } }}
         title="Потяните, чтобы изменить ширину. Двойной щелчок — вернуть как было"
       />
-      <div className="dtabs" role="tablist">
+      <div className="dtabs">
+        <div className="dtabs__scroll" role="tablist" ref={stripRef} onWheel={onStripWheel}>
         <button role="tab" aria-selected={active === LIST_TAB} className={`dtab dtab--list${active === LIST_TAB ? ' dtab--on' : ''}`} onClick={() => onActivate(LIST_TAB)}>
           <Icon name="list" size={16} />Список
         </button>
@@ -105,6 +118,7 @@ export default function DocPane({ sources, tabs, active, onActivate, onOpen, onC
             </span>
           );
         })}
+        </div>
         <button className="dtabs__hide dtabs__hide--first" onClick={onCloseAll} aria-label="Закрыть все документы" title="Закрыть все документы">
           <Icon name="x" size={16} />Закрыть все
         </button>
