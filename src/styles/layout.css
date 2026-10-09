@@ -125,7 +125,8 @@
 @keyframes caret { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 
 /* ---------- стартовый экран ---------- */
-.welcome { position: relative; overflow: hidden; background: #fff; flex: 999 1 520px; min-width: 0; min-height: 100vh; display: flex; flex-direction: column; padding: var(--space-8) var(--space-10) var(--space-8); }
+.welcome { position: relative; overflow: hidden; overflow: clip; /* clip: падающие осколки не делают блок прокручиваемым, фон не уезжает */
+  background: #fff; flex: 999 1 520px; min-width: 0; min-height: 100vh; display: flex; flex-direction: column; padding: var(--space-8) var(--space-10) var(--space-8); }
 .welcome__tag { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; padding: 4px 12px; border: 1px solid var(--er-color-border); border-radius: var(--radius-pill); background: #fff; font-size: 13px; line-height: 20px; color: var(--er-color-muted); }
 .welcome__tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--er-color-success); }
 .welcome__title { margin: 0; font-size: 54px; line-height: 60px; letter-spacing: -0.025em; }
