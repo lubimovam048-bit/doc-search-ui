@@ -84,11 +84,11 @@ export function DocActions({ source, docUrl, onOpenTab }: ActionsProps) {
           )}
         </div>
       )}
+      <button className="dact" onClick={() => copy(cite, 'Цитата скопирована')}><Icon name="copy" size={16} />Копировать цитату</button>
       <div className="dact__tools">
         {onOpenTab && (
           <button className="dact dact--icon" onClick={onOpenTab} aria-label="Открыть в новой вкладке" title="Открыть в новой вкладке"><Icon name="external" size={16} /></button>
         )}
-        <button className="dact dact--icon" onClick={() => copy(cite, 'Цитата скопирована')} aria-label="Копировать цитату" title="Копировать цитату"><Icon name="quote" size={16} /></button>
         {isAdmin && (
           <button className="dact dact--icon" onClick={() => window.print()} aria-label="Печать" title="Печать"><Icon name="print" size={16} /></button>
         )}
