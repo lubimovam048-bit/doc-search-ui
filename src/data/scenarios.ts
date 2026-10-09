@@ -73,12 +73,6 @@ export function classifyQuery(raw: string): AnswerType {
   return 'empty';
 }
 
-/** Подсказки в пустом поле: набираются по очереди, последняя остаётся. */
-export const EXAMPLE_QUERIES = [
-  'Какие меры приняты по задержке поставки металлоконструкций?',
-  'Приказ № 214 от 14.03.2026',
-  'Что есть по методике ранжирования объектов?',
-];
 
 /** Подсказки следующих вопросов после ответа. */
 export const FOLLOW_UPS: Record<AnswerType, string[]> = {
