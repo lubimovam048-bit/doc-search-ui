@@ -264,7 +264,7 @@
 /* Ручка изменения ширины правой части */
 .docpane__grip { position: absolute; top: 0; bottom: 0; left: -5px; width: 10px; z-index: 3; cursor: col-resize; touch-action: none; }
 .docpane__grip::after { content: ''; position: absolute; top: 0; bottom: 0; left: 4px; width: 2px; background: transparent; transition: background-color .15s; }
-.docpane__grip:hover::after, .docpane__grip:focus-visible::after, .docpane--drag .docpane__grip::after { background: var(--er-color-primary); }
+.docpane__grip:hover::after, .docpane__grip:focus-visible::after, .docpane--drag .docpane__grip::after { background: color-mix(in srgb, var(--er-color-primary) 22%, #e4eaf4); }
 .docpane--drag { user-select: none; animation: none; }
 body.pane-dragging { cursor: col-resize; user-select: none; }
 @media (max-width: 1100px) { .docpane__grip { display: none; } }
