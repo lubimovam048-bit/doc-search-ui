@@ -234,7 +234,9 @@
 .dact__wrap { position: relative; }
 .dact__menu { top: calc(100% + 6px); left: 0; width: 250px; max-width: none; gap: 2px; padding: 6px; }
 .dact__menu .hstack { flex-wrap: nowrap; white-space: nowrap; }
-.dact__note { margin-left: auto; font-size: 13px; color: var(--er-color-success); }
+.dact__tools { display: flex; gap: 8px; }
+.dact ~ .dact__tools, .dact__wrap ~ .dact__tools { margin-left: auto; }
+.dact__note { flex-basis: 100%; font-size: 13px; color: var(--er-color-success); }
 @media print {
   .sidebar, .app__burger, .ans, .dtabs, .docpane__head, .docpane__actions, .scrim, .drawer-scrim { display: none !important; }
   .app, .app__body, .main, .main--doc { display: block !important; height: auto !important; }
