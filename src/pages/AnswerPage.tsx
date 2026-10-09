@@ -23,6 +23,12 @@ const FEEDBACK_TEXT: Record<string, string> = {
   missing: 'Запрос передан администратору с пометкой «не хватает документа».',
 };
 
+/** Цвет плашки типа ответа: обычный ответ, предупреждение, пустой результат. */
+const TYPE_TONE: Record<string, 'info' | 'warning' | 'neutral'> = {
+  list: 'info', summary: 'info', table: 'info', status: 'info',
+  diverge: 'warning', deleted: 'warning', empty: 'neutral',
+};
+
 export default function AnswerPage() {
   const { id } = useParams();
   const { history, ask, setClarify } = useApp();
@@ -141,7 +147,7 @@ export default function AnswerPage() {
               </div>
             )}
         <div className="ans__trust">
-          <span className="ans__type">{scenario.type}</span>
+          <span className={`ans__type ans__type--${TYPE_TONE[scenario.id]}`}>{scenario.type}</span>
           {sources.length > 0 && <span>Найдено {docsText}</span>}
           {scenario.asOf && <span>{scenario.asOf}</span>}
         </div>
