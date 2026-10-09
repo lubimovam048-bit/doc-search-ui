@@ -35,11 +35,16 @@
 
   /* статусы */
   --er-color-success: #147854;
-  --er-color-success-soft: #e5f6ef;
+  --er-color-success-soft: #f0fdf4;
+  --er-color-success-line: #dcfce7;
   --er-color-warning: #9d5e13;
-  --er-color-warning-soft: #fff3de;
+  --er-color-warning-soft: #fefce8;
+  --er-color-warning-line: #fef9c3;
   --er-color-danger: #b43b51;
-  --er-color-danger-soft: #fcecf0;
+  --er-color-danger-soft: #fef2f2;
+  --er-color-danger-line: #fee2e2;
+  --er-color-info-soft: #eff6ff;
+  --er-color-info-line: #dbeafe;
   --er-color-violet: #6b4fd1;
   --er-color-violet-soft: #eee9fd;
   --er-color-teal: #0f7f86;
