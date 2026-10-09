@@ -164,10 +164,13 @@
 .dtabs { display: flex; align-items: flex-end; gap: 4px; padding: 10px 12px 0; border-bottom: 1px solid #e4eaf4; background: #f3f6fb; }
 .dtabs__scroll { flex: 1 1 auto; min-width: 0; display: flex; align-items: flex-end; gap: 4px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-x: contain; }
 .dtabs__scroll::-webkit-scrollbar { display: none; }
-.dtab { flex: 0 0 auto; width: 190px; display: inline-flex; align-items: center; gap: 2px; min-width: 0; max-width: 220px; height: 40px; border-radius: 10px 10px 0 0; border: 1px solid transparent; border-bottom: 0; font-size: 14px; color: var(--er-color-muted); }
+.dtabs__scroll { scroll-padding-inline: 32px; --fl: 0px; --fr: 0px; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fl), #000 calc(100% - var(--fr)), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 var(--fl), #000 calc(100% - var(--fr)), transparent 100%); }
+.dtabs__scroll--l { --fl: 28px; }
+.dtabs__scroll--r { --fr: 28px; }
+.dtab { flex: 0 1 190px; display: inline-flex; align-items: center; gap: 2px; min-width: 150px; max-width: 220px; height: 40px; border-radius: 10px 10px 0 0; border: 1px solid transparent; border-bottom: 0; font-size: 14px; color: var(--er-color-muted); }
 .dtab:hover { background: #e9eff9; }
 .dtab--on, .dtab--on:hover { background: #fff; border-color: #e4eaf4; color: var(--er-color-text); position: relative; top: 1px; height: 41px; }
-.dtab--list { width: auto; gap: 8px; padding: 0 14px; background: transparent; }
+.dtab--list { flex: none; min-width: 0; gap: 8px; padding: 0 14px; background: transparent; }
 .dtab__main { display: inline-flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; height: 100%; padding: 0 4px 0 12px; border: 0; background: transparent; font-size: 14px; color: inherit; white-space: nowrap; }
 .dtab__t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dtab__main .scard__ext { flex: none; }

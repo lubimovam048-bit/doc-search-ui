@@ -45,10 +45,29 @@ export default function DocPane({ sources, tabs, active, onActivate, onOpen, onC
     if (el && Math.abs(e.deltaY) > Math.abs(e.deltaX)) el.scrollLeft += e.deltaY;
   };
 
-  // активная вкладка всегда в зоне видимости
+  // у краёв, где есть скрытые вкладки, лента плавно гаснет
+  const [edges, setEdges] = useState({ l: false, r: false });
+  const updateEdges = () => {
+    const el = stripRef.current;
+    if (!el) return;
+    const l = el.scrollLeft > 2;
+    const r = el.scrollLeft + el.clientWidth < el.scrollWidth - 2;
+    setEdges((e) => (e.l === l && e.r === r ? e : { l, r }));
+  };
+
+  // активная вкладка всегда целиком в зоне видимости
   useEffect(() => {
     stripRef.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    updateEdges();
   }, [active, tabs.length]);
+
+  useEffect(() => {
+    const el = stripRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(updateEdges);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const current = sources.find((x) => x.id === active) ?? null;
 
   const startDrag = (e: ReactPointerEvent) => {
@@ -102,7 +121,7 @@ export default function DocPane({ sources, tabs, active, onActivate, onOpen, onC
         title="Потяните, чтобы изменить ширину. Двойной щелчок — вернуть как было"
       />
       <div className="dtabs">
-        <div className="dtabs__scroll" role="tablist" ref={stripRef} onWheel={onStripWheel}>
+        <div className={`dtabs__scroll${edges.l ? ' dtabs__scroll--l' : ''}${edges.r ? ' dtabs__scroll--r' : ''}`} role="tablist" ref={stripRef} onWheel={onStripWheel} onScroll={updateEdges}>
         <button role="tab" aria-selected={active === LIST_TAB} className={`dtab dtab--list${active === LIST_TAB ? ' dtab--on' : ''}`} onClick={() => onActivate(LIST_TAB)}>
           <Icon name="list" size={16} />Список
         </button>
