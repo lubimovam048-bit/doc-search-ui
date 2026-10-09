@@ -223,3 +223,5 @@
 .related__item:hover { background: #e4edfd; }
 .related__go { opacity: 0; transform: translateX(-4px); transition: opacity .15s, transform .15s; }
 .related__item:hover .related__go, .related__item:focus-visible .related__go { opacity: 1; transform: none; }
+
+.scard__why { margin: 0; padding: 12px 18px 0; font-size: 14px; line-height: 21px; font-weight: 500; color: var(--er-color-text); }

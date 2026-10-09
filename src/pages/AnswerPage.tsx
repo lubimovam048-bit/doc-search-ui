@@ -95,7 +95,7 @@ export default function AnswerPage() {
 
   const view = (() => {
     switch (scenario.id) {
-      case 'list': return <ListAnswer openId={openId} onPick={openDoc} indexOf={indexOf} />;
+      case 'list': return <ListAnswer />;
       case 'summary': return <SummaryAnswer deleted={false} cite={cite} />;
       case 'deleted': return <SummaryAnswer deleted cite={cite} />;
       case 'table': return <TableAnswer cite={cite} />;

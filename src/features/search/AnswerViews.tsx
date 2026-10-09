@@ -1,34 +1,18 @@
 import type { ReactNode } from 'react';
 import Icon from '../../components/Icon';
-import { SOURCES } from '../../data/sources';
 
 /** Функция отрисовки сноски: знает нумерацию и какой источник сейчас раскрыт. */
 export type RenderCite = (sourceId: string, label: string) => ReactNode;
 export type PickSource = (sourceId: string) => void;
 
-/* 1. Список документов */
-export function ListAnswer({ openId, onPick, indexOf }: { openId: string | null; onPick: PickSource; indexOf: (id: string) => number }) {
-  const docs = [
-    { id: 's_method', why: 'Основной документ: критерии, веса и порядок расчёта итогового балла.' },
-    { id: 's_order', why: 'Вводит методику в действие с 01.04.2026 и назначает ответственных за рейтинг.' },
-    { id: 's_protocol', why: 'Содержит решение о коэффициенте для объектов вокзальной инфраструктуры.' },
-  ];
+/* 1. Список документов: сами документы показаны ниже, в блоке источников, с пояснением к каждому */
+export function ListAnswer() {
   return (
     <div className="answer">
+      <h2 className="ans-title">Найдено три документа по методике ранжирования</h2>
       <p className="t-blog c2 lead">
-        По результатам анализа документов найдено <span className="c1">три документа</span>, относящихся к методике ранжирования объектов.
         Действующая методика указана под номером 1; приказ и протокол поясняют порядок её ввода и применения.
       </p>
-      {docs.map((d) => (
-        <div key={d.id} className="row rise">
-          <span className={`cn${openId === d.id ? ' cn--on' : ''}`}>{indexOf(d.id)}</span>
-          <div className="stack stack--8" style={{ minWidth: 0, flex: 1 }}>
-            <span className="t-b1 c1">{SOURCES[d.id].title}</span>
-            <span className="t-blog c2">{d.why}</span>
-            <div><button className="btn-link t-btn2" onClick={() => onPick(d.id)}>Открыть документ</button></div>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

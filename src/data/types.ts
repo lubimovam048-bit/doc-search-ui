@@ -12,6 +12,8 @@ export interface Source {
   after?: string;
   /** Предупреждение о качестве источника, например скан. */
   note?: string;
+  /** Чем документ полезен для ответа (для ответов-списков). */
+  why?: string;
 }
 
 export type AnswerType = 'list' | 'summary' | 'table' | 'status' | 'diverge' | 'empty' | 'deleted';
