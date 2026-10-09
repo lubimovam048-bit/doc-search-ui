@@ -28,6 +28,7 @@ export default function SourceCards({ sources, activeId, onOpen }: Props) {
               <span className="scard__name">{s.title}</span>
               <span className="scard__meta">{del ? 'удалён' : pg ? `стр. ${pg}` : ''}</span>
             </button>
+            {s.why && <p className="scard__why">{s.why}</p>}
             {s.kind === 'text' && (
               <button className="scard__body" onClick={() => onOpen(s.id)} tabIndex={-1} aria-hidden="true">
                 <span className="scard__ctx">{s.before}</span>
