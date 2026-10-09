@@ -67,9 +67,9 @@ function buildPage(item: RingItem): HTMLElement {
 
 /** Разбивает прямоугольник на неровные осколки: общие вершины, чтобы края сходились. */
 function shardPolygons(): string[][] {
-  const cols = 3, rows = 4;
+  const cols = 3, rows = 3;
   const xs = [0, 100 / 3, 200 / 3, 100];
-  const ys = [0, 25, 50, 75, 100];
+  const ys = [0, 100 / 3, 200 / 3, 100];
   const jx = 9, jy = 8;
   const v: { x: number; y: number }[][] = ys.map((y, r) => xs.map((x, c) => {
     const edgeX = c === 0 || c === cols;
@@ -84,7 +84,7 @@ function shardPolygons(): string[][] {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const a = v[r][c], b = v[r][c + 1], d = v[r + 1][c + 1], e = v[r + 1][c];
-      if (Math.random() < 0.55) {
+      if (Math.random() < 0.4) {
         // делим ячейку по диагонали на два треугольника
         out.push(Math.random() < 0.5 ? [pt(a), pt(b), pt(d)] : [pt(a), pt(b), pt(e)]);
         out.push(Math.random() < 0.5 ? [pt(a), pt(d), pt(e)] : [pt(b), pt(d), pt(e)]);
@@ -159,6 +159,46 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
   ro.observe(host);
   if (reduce) place(6); else raf = requestAnimationFrame(loop);
 
+
+  // заготовки осколков строим заранее, в простое: на клике остаётся только вставить их в DOM
+  type Shard = { s: HTMLElement; mx: number; my: number };
+  const pre = new Map<HTMLElement, { group: HTMLElement; shards: Shard[] }>();
+  const prebuild = (c: HTMLElement) => {
+    const inner = c.firstElementChild as HTMLElement;
+    const group = el('div', 'rc rc--burst');
+    const shards: Shard[] = [];
+    shardPolygons().forEach((poly) => {
+      // осколок занимает только свой прямоугольник: растр в разы меньше, чем у целой карточки
+      const pts = poly.map((p) => p.split(' ').map((v) => parseFloat(v)));
+      const x0 = Math.min(...pts.map((n) => n[0])), x1 = Math.max(...pts.map((n) => n[0]));
+      const y0 = Math.min(...pts.map((n) => n[1])), y1 = Math.max(...pts.map((n) => n[1]));
+      const bx = (x0 / 100) * CARD_W, by = (y0 / 100) * CARD_H;
+      const bw = ((x1 - x0) / 100) * CARD_W, bh = ((y1 - y0) / 100) * CARD_H;
+      const s = el('div', 'rc__shard');
+      s.style.cssText = `left:${bx}px;top:${by}px;width:${bw}px;height:${bh}px;`;
+      s.style.clipPath = `polygon(${pts.map((n) => `${(((n[0] - x0) / (x1 - x0 || 1)) * 100).toFixed(1)}% ${(((n[1] - y0) / (y1 - y0 || 1)) * 100).toFixed(1)}%`).join(',')})`;
+      const body = inner.cloneNode(true) as HTMLElement;
+      body.style.cssText = `position:absolute;left:${-bx}px;top:${-by}px;width:${CARD_W}px;height:${CARD_H}px;`;
+      s.append(body);
+      group.append(s);
+      shards.push({
+        s,
+        mx: pts.reduce((a, n) => a + n[0], 0) / pts.length / 100,
+        my: pts.reduce((a, n) => a + n[1], 0) / pts.length / 100,
+      });
+    });
+    const out = { group, shards };
+    pre.set(c, out);
+    return out;
+  };
+  let warm = 0;
+  const warmUp = () => {
+    if (destroyed || bursting || warm >= cards.length) return;
+    prebuild(cards[warm++]);
+    window.setTimeout(warmUp, 60);
+  };
+  if (!reduce) window.setTimeout(warmUp, 1500);
+
   const destroy = () => {
     if (destroyed) return;
     destroyed = true;
@@ -183,36 +223,26 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
     const ox = W / 2;
     const oy = cardY + 150 * k;
     const finishes: Promise<unknown>[] = [];
+    const toRemove: HTMLElement[] = [];
 
     cards.forEach((c) => {
       if (c.style.visibility === 'hidden') return;
       const op = parseFloat(c.style.opacity || '1');
-      if (op < 0.03) return;
+      if (op < 0.2) return;
 
-      const group = el('div', 'rc rc--burst');
+      const { group, shards } = pre.get(c) ?? prebuild(c);
       group.style.left = c.style.left;
       group.style.top = c.style.top;
       group.style.transform = c.style.transform;
       group.style.opacity = c.style.opacity;
-      group.style.filter = c.style.filter;
       group.style.visibility = 'visible';
-      const inner = c.firstElementChild as HTMLElement;
 
       // положение карточки на экране, чтобы осколки летели от центра
       const m = /translate3d\(([-\d.]+)px/.exec(c.style.transform);
       const cx = W / 2 + (m ? parseFloat(m[1]) : 0);
       const cy = cardY;
 
-      shardPolygons().forEach((poly) => {
-        const s = el('div', 'rc__shard');
-        s.style.clipPath = `polygon(${poly.join(',')})`;
-        s.append(inner.cloneNode(true));
-        group.append(s);
-
-        // середина осколка в координатах карточки
-        const nums = poly.map((p) => p.split(' ').map((v) => parseFloat(v)));
-        const mx = nums.reduce((a, n) => a + n[0], 0) / nums.length / 100;
-        const my = nums.reduce((a, n) => a + n[1], 0) / nums.length / 100;
+      shards.forEach(({ s, mx, my }) => {
         const sx = cx + (mx - 0.5) * CARD_W * k;
         const sy = cy + (my - 0.5) * CARD_H * k;
         let vx = sx - ox, vy = sy - oy;
@@ -232,10 +262,10 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
         const dur = 620 + Math.random() * 300;
         const a = s.animate(
           [
-            { transform: 'translate3d(0,0,0)', opacity: 1, easing: 'cubic-bezier(.1,.7,.2,1)' },
-            { transform: `translate3d(${px}px,${py}px,${dz * 0.4}px) rotate3d(${ax},${ay},${az},${deg * 0.35}deg)`, opacity: 1, offset: 0.2, easing: 'cubic-bezier(.45,0,.9,.6)' },
+            { transform: `perspective(${700 * k}px) translate3d(0,0,0)`, opacity: 1, easing: 'cubic-bezier(.1,.7,.2,1)' },
+            { transform: `perspective(${700 * k}px) translate3d(${px}px,${py}px,${dz * 0.4}px) rotate3d(${ax},${ay},${az},${deg * 0.35}deg)`, opacity: 1, offset: 0.2, easing: 'cubic-bezier(.45,0,.9,.6)' },
             { opacity: 1, offset: 0.55 },
-            { transform: `translate3d(${fx}px,${fy}px,${dz}px) rotate3d(${ax},${ay},${az},${deg}deg)`, opacity: 0 },
+            { transform: `perspective(${700 * k}px) translate3d(${fx}px,${fy}px,${dz}px) rotate3d(${ax},${ay},${az},${deg}deg)`, opacity: 0 },
           ],
           { duration: dur, delay, fill: 'both' },
         );
@@ -243,8 +273,11 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
       });
 
       ring.append(group);
-      c.remove();
+      toRemove.push(c);
     });
+
+    // старые карточки убираем, только когда осколки уже нарисованы: иначе на кадр-два всё мигает
+    requestAnimationFrame(() => requestAnimationFrame(() => toRemove.forEach((c) => c.remove())));
 
     Promise.all(finishes).then(destroy, destroy);
   };
