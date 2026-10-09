@@ -242,3 +242,19 @@
   .docpane__body { overflow: visible !important; background: #fff !important; padding: 0 !important; }
   .docpage { box-shadow: none !important; }
 }
+
+/* Отдельная страница документа */
+.docscreen { min-height: 100vh; background: #eef2f9; }
+.docscreen__bar { display: flex; align-items: center; gap: 16px; padding: 16px 32px 10px; }
+.docscreen__back { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 8px 12px; border-radius: 10px; color: var(--er-color-primary); font-weight: 600; text-decoration: none; }
+.docscreen__back:hover { background: #fff; }
+.docscreen__back svg { transform: scaleX(-1); }
+.docscreen__bar .docpane__titles { flex: 1; min-width: 0; }
+.docscreen .docpane__actions { padding: 0 32px 14px; border-bottom: 1px solid #d5deec; }
+.docscreen__body { max-width: 860px; margin: 0 auto; padding: 28px 24px 60px; }
+@media (max-width: 720px) {
+  .docscreen__bar { padding: 12px 16px 8px; flex-wrap: wrap; }
+  .docscreen .docpane__actions { padding: 0 16px 12px; }
+  .docscreen__body { padding: 16px 12px 40px; }
+}
+@media print { .docscreen__bar, .docscreen .docpane__actions { display: none !important; } .docscreen { background: #fff; } }

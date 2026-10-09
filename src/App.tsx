@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AppShell from './components/AppShell';
 import HomePage from './pages/HomePage';
 import AnswerPage from './pages/AnswerPage';
+import DocumentPage from './pages/DocumentPage';
 import FilesPage from './pages/FilesPage';
 import JournalPage from './pages/JournalPage';
 import { FEATURES } from './config';
@@ -17,6 +18,7 @@ function AdminOnly({ children }: { children: ReactElement }) {
 export default function App() {
   return (
     <Routes>
+      <Route path="doc/:id" element={<DocumentPage />} />
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
         <Route path="q/:id" element={<AnswerPage />} />
