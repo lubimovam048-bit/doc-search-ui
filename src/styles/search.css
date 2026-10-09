@@ -135,7 +135,7 @@
 
 .main--doc { flex-direction: row; align-items: stretch; }
 .main--doc .ans { margin: 0; flex: 1 1 0; min-width: 0; max-width: none; padding-left: 40px; padding-right: 40px; }
-.docpane { flex: 0 0 var(--pane-w, min(600px, 46vw)); position: sticky; top: 0; align-self: flex-start; height: 100vh; display: flex; flex-direction: column; border-left: 1px solid #e4eaf4; background: #fff; animation: rise var(--t-switch) var(--ease) backwards; }
+.docpane { min-width: 0; flex: 0 0 var(--pane-w, min(600px, 46vw)); position: sticky; top: 0; align-self: flex-start; height: 100vh; display: flex; flex-direction: column; border-left: 1px solid #e4eaf4; background: #fff; animation: rise var(--t-switch) var(--ease) backwards; }
 .docpane__head { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #e4eaf4; }
 .docpane__titles { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .docpane__titles b { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -161,11 +161,13 @@
 .cite__ico { flex: none; margin-left: 2px; color: var(--er-color-primary); }
 
 /* ---------- Вкладки правой части ---------- */
-.dtabs { display: flex; align-items: flex-end; gap: 4px; padding: 10px 12px 0; border-bottom: 1px solid #e4eaf4; background: #f3f6fb; overflow-x: auto; }
-.dtab { flex: 0 1 auto; display: inline-flex; align-items: center; gap: 2px; min-width: 0; max-width: 220px; height: 40px; border-radius: 10px 10px 0 0; border: 1px solid transparent; border-bottom: 0; font-size: 14px; color: var(--er-color-muted); }
+.dtabs { display: flex; align-items: flex-end; gap: 4px; padding: 10px 12px 0; border-bottom: 1px solid #e4eaf4; background: #f3f6fb; }
+.dtabs__scroll { flex: 1 1 auto; min-width: 0; display: flex; align-items: flex-end; gap: 4px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-x: contain; }
+.dtabs__scroll::-webkit-scrollbar { display: none; }
+.dtab { flex: 0 0 auto; width: 190px; display: inline-flex; align-items: center; gap: 2px; min-width: 0; max-width: 220px; height: 40px; border-radius: 10px 10px 0 0; border: 1px solid transparent; border-bottom: 0; font-size: 14px; color: var(--er-color-muted); }
 .dtab:hover { background: #e9eff9; }
 .dtab--on, .dtab--on:hover { background: #fff; border-color: #e4eaf4; color: var(--er-color-text); position: relative; top: 1px; height: 41px; }
-.dtab--list { gap: 8px; padding: 0 14px; background: transparent; }
+.dtab--list { width: auto; gap: 8px; padding: 0 14px; background: transparent; }
 .dtab__main { display: inline-flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; height: 100%; padding: 0 4px 0 12px; border: 0; background: transparent; font-size: 14px; color: inherit; white-space: nowrap; }
 .dtab__t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dtab__main .scard__ext { flex: none; }
@@ -186,7 +188,7 @@
 .dtabs__hide:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
 .ans__restore { position: sticky; top: 12px; z-index: 5; align-self: flex-end; margin-bottom: -8px; }
 
-.dtabs__hide--first { margin-left: auto; }
+.dtabs__hide--first { margin-left: 8px; }
 .dtabs__hide--second { margin-left: 0; }
 
 /* ---------- Уточнение запроса ---------- */
