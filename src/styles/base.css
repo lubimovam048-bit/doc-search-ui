@@ -159,7 +159,7 @@ h1, h2, h3, p { margin: 0; }
   background: var(--er-color-primary-soft-2); color: var(--er-color-primary-hover);
 }
 .cn--on { background: var(--er-color-primary); color: #fff; }
-.cn--del { background: var(--er-color-danger-soft); color: var(--er-color-danger); }
+.cn--del { background: var(--er-color-danger-soft); color: var(--er-color-danger); box-shadow: inset 0 0 0 1px var(--er-color-danger-line); }
 
 .cite {
   display: inline-flex; align-items: center; gap: 8px;
@@ -213,12 +213,12 @@ h1, h2, h3, p { margin: 0; }
 
 /* пастельные бейджи */
 .tag { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 13px; line-height: 18px; font-weight: 600; background: var(--er-color-neutral-soft); color: var(--er-color-muted); }
-.tag--blue { background: var(--er-color-primary-soft); color: var(--er-color-primary-hover); }
+.tag--blue { background: var(--er-color-info-soft); color: var(--er-color-info); box-shadow: inset 0 0 0 1px var(--er-color-info-line); }
 .tag--teal { background: var(--er-color-teal-soft); color: var(--er-color-teal); }
 .tag--violet { background: var(--er-color-violet-soft); color: var(--er-color-violet); }
-.tag--success { background: var(--er-color-success-soft); color: var(--er-color-success); }
-.tag--warning { background: var(--er-color-warning-soft); color: var(--er-color-warning); }
-.tag--danger { background: var(--er-color-danger-soft); color: var(--er-color-danger); }
+.tag--success { background: var(--er-color-success-soft); color: var(--er-color-success); box-shadow: inset 0 0 0 1px var(--er-color-success-line); }
+.tag--warning { background: var(--er-color-warning-soft); color: var(--er-color-warning); box-shadow: inset 0 0 0 1px var(--er-color-warning-line); }
+.tag--danger { background: var(--er-color-danger-soft); color: var(--er-color-danger); box-shadow: inset 0 0 0 1px var(--er-color-danger-line); }
 
 /* ---------- анимации: спокойные ---------- */
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
