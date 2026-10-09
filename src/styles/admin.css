@@ -43,7 +43,7 @@
 .tr--click:focus-visible { outline-offset: -2px; }
 .row-actions { display: inline-flex; gap: 14px; align-items: center; flex-wrap: nowrap; white-space: nowrap; justify-content: flex-end; }
 .btn-link--danger { color: var(--er-color-danger); }
-.btn-link--danger:hover { color: #8f2c3f; }
+.btn-link--danger:hover { color: #991b1b; }
 .check { width: 18px; height: 18px; accent-color: var(--er-color-primary); cursor: pointer; }
 .select { appearance: none; -webkit-appearance: none; height: 38px; padding: 0 36px 0 14px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234b607c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; text-overflow: ellipsis; border-radius: var(--radius-sm); border: 1px solid var(--er-color-border-strong); background-color: var(--er-color-surface); color: var(--er-color-text); font-family: inherit; }
 .pager { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-top: 1px solid var(--er-color-divider); }
