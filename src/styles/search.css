@@ -225,3 +225,20 @@
 .related__item:hover .related__go, .related__item:focus-visible .related__go { opacity: 1; transform: none; }
 
 .scard__why { margin: 0; padding: 12px 18px 0; font-size: 14px; line-height: 21px; font-weight: 500; color: var(--er-color-text); }
+
+/* ---------- Действия с документом ---------- */
+.docpane__actions { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 0 20px 12px; border-bottom: 1px solid #e4eaf4; }
+.dact { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid #d5deec; border-radius: 10px; background: #fff; font-size: 14px; color: var(--er-color-text); white-space: nowrap; transition: border-color .15s, background-color .15s; }
+.dact:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
+.dact--icon { width: 36px; padding: 0; justify-content: center; }
+.dact__wrap { position: relative; }
+.dact__menu { top: calc(100% + 6px); left: 0; width: 250px; max-width: none; gap: 2px; padding: 6px; }
+.dact__menu .hstack { flex-wrap: nowrap; white-space: nowrap; }
+.dact__note { margin-left: auto; font-size: 13px; color: var(--er-color-success); }
+@media print {
+  .sidebar, .app__burger, .ans, .dtabs, .docpane__head, .docpane__actions, .scrim, .drawer-scrim { display: none !important; }
+  .app, .app__body, .main, .main--doc { display: block !important; height: auto !important; }
+  .docpane { position: static !important; height: auto !important; border: 0 !important; width: 100% !important; }
+  .docpane__body { overflow: visible !important; background: #fff !important; padding: 0 !important; }
+  .docpage { box-shadow: none !important; }
+}
