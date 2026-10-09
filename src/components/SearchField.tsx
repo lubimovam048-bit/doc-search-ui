@@ -1,6 +1,4 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
-import { EXAMPLE_QUERIES } from '../data/scenarios';
-import { useTypewriter } from '../hooks/useTypewriter';
 import Icon from './Icon';
 
 interface Props {
@@ -18,16 +16,16 @@ export interface SearchFieldHandle {
   /** Подставляет вопрос в поле и запускает поиск, как после нажатия «Найти». */
   ask: (query: string) => void;
 }
+const PLACEHOLDER = 'Введите вопрос';
 const STATUSES = ['Ищу в документах…', 'Сверяю источники…', 'Формирую ответ со ссылками…'];
 
-/** Поле запроса: полупрозрачный луч по контуру и «печатающиеся» подсказки в пустом поле. */
+/** Поле запроса: полупрозрачный луч по контуру и подсказка в пустом поле. */
 const SearchField = forwardRef<SearchFieldHandle, Props>(function SearchField({ onSubmit, onStart, autoFocus }, ref) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [statusIdx, setStatusIdx] = useState(0);
   const timers = useRef<number[]>([]);
-  const hint = useTypewriter(EXAMPLE_QUERIES, { enabled: value === '' && !thinking && !focused });
 
   useEffect(() => () => timers.current.forEach(window.clearTimeout), []);
 
@@ -94,8 +92,7 @@ const SearchField = forwardRef<SearchFieldHandle, Props>(function SearchField({ 
               onBlur={() => setFocused(false)}
             />
             <div className={`search__ghost t-b1${value ? ' search__ghost--hidden' : ''}`} aria-hidden="true">
-              <span>{focused ? '' : hint}</span>
-              {(focused || hint) && <span className="search__caret" />}
+              {focused ? <span className="search__caret" /> : <span>{PLACEHOLDER}</span>}
             </div>
           </div>
           <button type="submit" className="btn-p t-btn2" tabIndex={thinking ? -1 : 0}>Найти<Icon name="arrow" size={16} stroke={2} /></button>
