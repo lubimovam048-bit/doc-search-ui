@@ -18,7 +18,7 @@ export default function SearchField({ onSubmit, autoFocus }: Props) {
   const [thinking, setThinking] = useState(false);
   const [statusIdx, setStatusIdx] = useState(0);
   const timers = useRef<number[]>([]);
-  const hint = useTypewriter(EXAMPLE_QUERIES, { enabled: value === '' && !thinking });
+  const hint = useTypewriter(EXAMPLE_QUERIES, { enabled: value === '' && !thinking && !focused });
 
   useEffect(() => () => timers.current.forEach(window.clearTimeout), []);
 
@@ -47,7 +47,7 @@ export default function SearchField({ onSubmit, autoFocus }: Props) {
           <Icon name="search" size={20} color="var(--er-color-subtle)" />
           <div className="search__field">
             <input
-              className="search__input t-b1"
+              className={`search__input t-b1${value === '' ? ' search__input--empty' : ''}`}
               type="text"
               aria-label="Запрос"
               autoComplete="off"
@@ -59,7 +59,7 @@ export default function SearchField({ onSubmit, autoFocus }: Props) {
               onBlur={() => setFocused(false)}
             />
             <div className={`search__ghost t-b1${value ? ' search__ghost--hidden' : ''}`} aria-hidden="true">
-              <span>{hint}</span>
+              <span>{focused ? '' : hint}</span>
               {(focused || hint) && <span className="search__caret" />}
             </div>
           </div>

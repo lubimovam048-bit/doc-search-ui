@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Options {
   typeMs?: number;
@@ -9,43 +9,48 @@ interface Options {
 }
 
 /**
- * «Печатает» и стирает подсказки по кругу.
- * При включённом «уменьшении движения» возвращает первую подсказку целиком.
+ * «Печатает» подсказки по очереди: набрала, подержала, стёрла, следующая.
+ * Последняя подсказка не стирается и остаётся в поле.
+ * Если анимацию приостановили (поле в фокусе), она продолжается с того же места.
+ * При включённом «уменьшении движения» сразу возвращает последнюю подсказку целиком.
  */
 export function useTypewriter(phrases: string[], opts: Options = {}): string {
-  const { typeMs = 55, eraseMs = 24, holdMs = 2600, pauseMs = 500, enabled = true } = opts;
+  const { typeMs = 110, eraseMs = 40, holdMs = 1800, pauseMs = 600, enabled = true } = opts;
+  const last = phrases.length - 1;
   const [text, setText] = useState('');
+  // ход анимации хранится между запусками эффекта
+  const progress = useRef({ idx: 0, len: 0, erasing: false, done: false });
 
   useEffect(() => {
     if (!enabled || phrases.length === 0) return;
+    const p = progress.current;
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      setText(phrases[0]);
+    if (reduce || p.done) {
+      p.done = true;
+      setText(phrases[last]);
       return;
     }
 
     let timer: number;
-    let phraseIdx = 0;
-    let len = 0;
-    let erasing = false;
-
     const tick = () => {
-      const phrase = phrases[phraseIdx];
-      if (!erasing) {
-        len += 1;
-        setText(phrase.slice(0, len));
-        if (len >= phrase.length) {
-          erasing = true;
+      const phrase = phrases[p.idx];
+      if (!p.erasing) {
+        p.len += 1;
+        setText(phrase.slice(0, p.len));
+        if (p.len >= phrase.length) {
+          if (p.idx === last) { p.done = true; return; }
+          p.erasing = true;
           timer = window.setTimeout(tick, holdMs);
           return;
         }
-        timer = window.setTimeout(tick, typeMs);
+        // небольшой разброс, чтобы набор выглядел живым
+        timer = window.setTimeout(tick, typeMs + Math.round((Math.random() - 0.5) * typeMs * 0.6));
       } else {
-        len -= 1;
-        setText(phrase.slice(0, len));
-        if (len <= 0) {
-          erasing = false;
-          phraseIdx = (phraseIdx + 1) % phrases.length;
+        p.len -= 1;
+        setText(phrase.slice(0, p.len));
+        if (p.len <= 0) {
+          p.erasing = false;
+          p.idx += 1;
           timer = window.setTimeout(tick, pauseMs);
           return;
         }
@@ -55,7 +60,7 @@ export function useTypewriter(phrases: string[], opts: Options = {}): string {
 
     timer = window.setTimeout(tick, pauseMs);
     return () => window.clearTimeout(timer);
-  }, [phrases, enabled, typeMs, eraseMs, holdMs, pauseMs]);
+  }, [phrases, enabled, last, typeMs, eraseMs, holdMs, pauseMs]);
 
   return text;
 }
