@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { RESP_TABLE, SOURCES } from '../../data/sources';
-import { createRing, type DocRing as Ring, type RingItem } from './docRing';
+import { createRing, type DocRing as Ring, type RingItem } from './ringEngine';
 
 export interface DocRingHandle {
   /** Документы рассыпаются и исчезают до обновления страницы. */

@@ -219,21 +219,25 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
         const len = Math.hypot(vx, vy) || 1;
         vx /= len; vy /= len;
 
-        const dist = (260 + Math.random() * 520) * k;
-        const dx = vx * dist + (Math.random() - 0.5) * 80 * k;
-        const dy = vy * dist * 0.8 + (40 + Math.random() * 120) * k;
-        const dz = (80 + Math.random() * 420) * k;
+        // резкий толчок наружу, затем осколки падают вниз и гаснут
+        const push = (50 + Math.random() * 90) * k;
+        const px = vx * push + (Math.random() - 0.5) * 30 * k;
+        const py = vy * push * 0.6 - (10 + Math.random() * 40) * k;
+        const fx = px + (Math.random() - 0.5) * 140 * k;
+        const fy = (420 + Math.random() * 380) * k;
+        const dz = (40 + Math.random() * 240) * k;
         const ax = Math.random() - 0.5, ay = Math.random() - 0.5, az = Math.random() - 0.5;
-        const deg = (Math.random() < 0.5 ? -1 : 1) * (70 + Math.random() * 230);
-        const delay = clamp(len / (W * 0.6), 0, 1) * 160 + Math.random() * 60; // волна от центра
-        const dur = 1150 + Math.random() * 650;
+        const deg = (Math.random() < 0.5 ? -1 : 1) * (60 + Math.random() * 200);
+        const delay = clamp(len / (W * 0.6), 0, 1) * 70 + Math.random() * 30;
+        const dur = 620 + Math.random() * 300;
         const a = s.animate(
           [
-            { transform: 'translate3d(0,0,0) rotate3d(0,0,1,0deg)', opacity: 1, filter: 'blur(0px)' },
-            { opacity: 1, offset: 0.3 },
-            { transform: `translate3d(${dx}px,${dy}px,${dz}px) rotate3d(${ax},${ay},${az},${deg}deg)`, opacity: 0, filter: 'blur(3px)' },
+            { transform: 'translate3d(0,0,0)', opacity: 1, easing: 'cubic-bezier(.1,.7,.2,1)' },
+            { transform: `translate3d(${px}px,${py}px,${dz * 0.4}px) rotate3d(${ax},${ay},${az},${deg * 0.35}deg)`, opacity: 1, offset: 0.2, easing: 'cubic-bezier(.45,0,.9,.6)' },
+            { opacity: 1, offset: 0.55 },
+            { transform: `translate3d(${fx}px,${fy}px,${dz}px) rotate3d(${ax},${ay},${az},${deg}deg)`, opacity: 0 },
           ],
-          { duration: dur, delay, easing: 'cubic-bezier(.16,.75,.22,1)', fill: 'both' },
+          { duration: dur, delay, fill: 'both' },
         );
         finishes.push(a.finished);
       });
