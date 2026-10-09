@@ -1,0 +1,42 @@
+/* ---------- кольцо документов на стартовом экране ---------- */
+.welcome__ring { position: relative; z-index: 2; flex: 1 1 0; min-height: 260px; pointer-events: none; }
+.ring3d { position: absolute; inset: 0; transform-style: preserve-3d; }
+.rc { position: absolute; width: 150px; height: 212px; margin: -106px 0 0 -75px; border-radius: 8px; background: #fff; overflow: hidden; box-shadow: 0 8px 28px rgba(36, 60, 120, .09), 0 1px 3px rgba(36, 60, 120, .06); backface-visibility: hidden; will-change: transform, opacity; color: #1f2a3d; font-family: 'Times New Roman', Georgia, serif; }
+.rc--burst { background: transparent; box-shadow: none; overflow: visible; transform-style: preserve-3d; }
+.rc__shard { position: absolute; inset: 0; background: #fff; backface-visibility: visible; will-change: transform, opacity; }
+.rc__in { position: absolute; inset: 0; padding: 12px; }
+.rc__top { display: flex; justify-content: space-between; margin-bottom: 8px; font: 600 6px 'Onest', sans-serif; letter-spacing: .08em; color: #8a99ae; }
+.rc__h { margin: 0 0 6px; font: 700 8px/1.15 'Times New Roman', Georgia, serif; text-align: center; text-transform: uppercase; }
+.rc__in p { margin: 0 0 5px; font-size: 6.4px; line-height: 8.6px; text-align: justify; color: #3b4a63; }
+.rc__in mark { background: #cddcfa; color: inherit; }
+.rc__ln { height: 3px; margin: 0 0 5px; border-radius: 2px; background: #e6ebf4; }
+.rc__ln--s { width: 70%; }
+.rc__table { width: 100%; margin-top: 6px; border-collapse: collapse; font: 5.6px/1 'Onest', sans-serif; }
+.rc__table td, .rc__table th { padding: 4px 3px; border: 1px solid #e1e7f2; text-align: left; }
+.rc__table th { background: #f1f5fc; font-weight: 600; }
+.rc__hl td { background: #cddcfa; }
+
+/* белая полупрозрачная плашка с заголовком и поиском */
+.welcome__panel {
+  position: relative; z-index: 5; align-self: center; width: min(800px, 100%); margin-top: -56px;
+  display: flex; flex-direction: column; align-items: center; padding: 44px 40px 34px; text-align: center;
+  border: 1px solid rgba(255, 255, 255, .85); border-radius: 30px;
+  background: rgba(255, 255, 255, .66);
+  -webkit-backdrop-filter: blur(16px) saturate(130%); backdrop-filter: blur(16px) saturate(130%);
+  box-shadow: 0 30px 80px rgba(36, 70, 150, .18), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+.welcome__panel .welcome__title { font-size: 50px; line-height: 56px; }
+.welcome__panel .qcards { margin-top: 26px; max-width: none; }
+.welcome__panel .welcome__composer { max-width: none; margin-top: 22px; }
+.welcome__note { margin-top: 14px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .welcome__panel { animation: panel-in .8s var(--ease) .45s backwards; }
+}
+@keyframes panel-in { from { opacity: 0; transform: translateY(26px); } }
+
+@media (max-width: 720px) {
+  .welcome__ring { display: none; }
+  .welcome__panel { margin-top: auto; padding: 28px 18px 22px; border-radius: 24px; }
+  .welcome__panel .welcome__title { font-size: 32px; line-height: 38px; }
+}

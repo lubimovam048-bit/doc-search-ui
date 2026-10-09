@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import SearchField, { type SearchFieldHandle } from '../components/SearchField';
 import WelcomeBackground, { type WelcomeBackgroundHandle } from '../components/WelcomeBackground';
 import { useApp } from '../context/AppContext';
+import DocRing, { type DocRingHandle } from '../features/welcome/DocRing';
 
 const CARDS = [
   'Какие последние изменения внёс Шилов А. В.?',
@@ -16,6 +17,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const bg = useRef<WelcomeBackgroundHandle>(null);
   const field = useRef<SearchFieldHandle>(null);
+  const docs = useRef<DocRingHandle>(null);
   const lastInput = useRef(0);
 
   const go = (q: string) => navigate(`/q/${ask(q).id}`);
@@ -23,12 +25,13 @@ export default function HomePage() {
   return (
     <main className="welcome">
       <WelcomeBackground ref={bg} />
-      <div className="welcome__hero">
+      <DocRing ref={docs} />
+      <section className="welcome__panel">
         <h1 className="welcome__title">Ваш ИИ-помощник<br />вместо сотни страниц</h1>
 
         <div className="qcards">
           {CARDS.map((q) => (
-            <button key={q} type="button" className="qcard" onClick={() => { bg.current?.pulse(false); field.current?.ask(q); }}>{q}</button>
+            <button key={q} type="button" className="qcard" onClick={() => { bg.current?.pulse(false); docs.current?.burst(); field.current?.ask(q); }}>{q}</button>
           ))}
         </div>
 
@@ -38,11 +41,11 @@ export default function HomePage() {
             const n = performance.now();
             if (n - lastInput.current > 420) { lastInput.current = n; bg.current?.pulse(false); }
           }}
-          onFocus={() => bg.current?.pulse(false)}
+          onFocus={() => { bg.current?.pulse(false); docs.current?.burst(); }}
         >
-          <SearchField ref={field} onSubmit={go} onStart={() => bg.current?.pulse(true)} autoFocus />
+          <SearchField ref={field} onSubmit={go} onStart={() => { bg.current?.pulse(true); docs.current?.burst(); }} />
         </div>
-      </div>
+      </section>
       <span className="t-cap1 c3 welcome__note">Запросы сохраняются и доступны администратору.</span>
     </main>
   );
