@@ -56,12 +56,17 @@ const WelcomeBackground = forwardRef<WelcomeBackgroundHandle>(function WelcomeBa
     let raf = 0;
     const start = performance.now();
     let lastGrain = 0;
+    let lastBreath = 0;
     const tick = (now: number) => {
       const b = Math.sin(((now - start) / 1000) * (Math.PI * 2) / 9);
       boost.current *= 0.985;
       const l = layer.current!;
-      l.style.setProperty('--rx', `${64 + b * 9}%`);
-      l.style.setProperty('--ry', `${98 + b * 10}%`);
+      // маска перерисовывается целиком, поэтому дыхание обновляем не чаще 25 раз в секунду
+      if (now - lastBreath > 40) {
+        lastBreath = now;
+        l.style.setProperty('--rx', `${64 + b * 9}%`);
+        l.style.setProperty('--ry', `${98 + b * 10}%`);
+      }
       l.style.opacity = String(0.46 + b * 0.11 + boost.current * 0.12);
 
       if (now - lastGrain > 85) {
