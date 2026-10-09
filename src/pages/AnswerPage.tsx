@@ -197,6 +197,7 @@ export default function AnswerPage() {
           onCloseTab={closeTab}
           onHide={() => setHidden(true)}
           onCloseAll={closeAll}
+          shareUrl={`${window.location.href.split('#')[0]}#/q/${entry.id}`}
         />
       )}
     </main>
