@@ -135,7 +135,7 @@
 
 .main--doc { flex-direction: row; align-items: stretch; }
 .main--doc .ans { margin: 0; flex: 1 1 0; min-width: 0; max-width: none; padding-left: 40px; padding-right: 40px; }
-.docpane { flex: 0 0 min(600px, 46vw); position: sticky; top: 0; align-self: flex-start; height: 100vh; display: flex; flex-direction: column; border-left: 1px solid #e4eaf4; background: #fff; animation: rise var(--t-switch) var(--ease) backwards; }
+.docpane { flex: 0 0 var(--pane-w, min(600px, 46vw)); position: sticky; top: 0; align-self: flex-start; height: 100vh; display: flex; flex-direction: column; border-left: 1px solid #e4eaf4; background: #fff; animation: rise var(--t-switch) var(--ease) backwards; }
 .docpane__head { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #e4eaf4; }
 .docpane__titles { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .docpane__titles b { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -260,3 +260,11 @@
   .docscreen__body { padding: 16px 12px 40px; }
 }
 @media print { .docscreen__bar, .docscreen .docpane__actions { display: none !important; } .docscreen { background: #fff; } }
+
+/* Ручка изменения ширины правой части */
+.docpane__grip { position: absolute; top: 0; bottom: 0; left: -5px; width: 10px; z-index: 3; cursor: col-resize; touch-action: none; }
+.docpane__grip::after { content: ''; position: absolute; top: 0; bottom: 0; left: 4px; width: 2px; background: transparent; transition: background-color .15s; }
+.docpane__grip:hover::after, .docpane__grip:focus-visible::after, .docpane--drag .docpane__grip::after { background: var(--er-color-primary); }
+.docpane--drag { user-select: none; animation: none; }
+body.pane-dragging { cursor: col-resize; user-select: none; }
+@media (max-width: 1100px) { .docpane__grip { display: none; } }

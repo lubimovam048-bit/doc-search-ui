@@ -1,9 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import Icon from '../../components/Icon';
 import type { Source } from '../../data/types';
 import { DocActions, DocSheet, ext, pageInfo } from './DocView';
 
 export const LIST_TAB = 'list';
+
+const MIN_W = 380;
+const STORE = 'docpane-width';
+const maxW = () => Math.min(960, Math.round(window.innerWidth * 0.7));
+const clamp = (w: number) => Math.max(MIN_W, Math.min(maxW(), w));
+const loadWidth = (): number | null => {
+  try { const v = Number(localStorage.getItem(STORE)); return v ? clamp(v) : null; } catch { return null; }
+};
 
 interface Props {
   /** Источники ответа, которые можно открыть (без удалённых). */
@@ -26,7 +34,36 @@ interface Props {
 /** Правая часть: вкладки «Список» и открытые документы. У каждой вкладки документа свой крестик. */
 export default function DocPane({ sources, tabs, active, onActivate, onOpen, onCloseTab, onHide, onCloseAll, docUrl }: Props) {
   const [big, setBig] = useState(false);
+  const [width, setWidth] = useState<number | null>(loadWidth);
+  const [drag, setDrag] = useState(false);
+  const paneRef = useRef<HTMLElement>(null);
   const current = sources.find((x) => x.id === active) ?? null;
+
+  const startDrag = (e: ReactPointerEvent) => {
+    e.preventDefault();
+    const right = paneRef.current?.getBoundingClientRect().right ?? window.innerWidth;
+    setDrag(true);
+    document.body.classList.add('pane-dragging');
+    let last = 0;
+    const move = (ev: PointerEvent) => { last = clamp(right - ev.clientX); setWidth(last); };
+    const up = () => {
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      document.body.classList.remove('pane-dragging');
+      setDrag(false);
+      if (last) { try { localStorage.setItem(STORE, String(last)); } catch { /* без сохранения */ } }
+    };
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  };
+  const onGripKey = (e: ReactKeyEvent) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const cur = paneRef.current?.getBoundingClientRect().width ?? 600;
+    const next = clamp(cur + (e.key === 'ArrowLeft' ? 40 : -40));
+    setWidth(next);
+    try { localStorage.setItem(STORE, String(next)); } catch { /* без сохранения */ }
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && current && onCloseTab(current.id);
@@ -35,7 +72,23 @@ export default function DocPane({ sources, tabs, active, onActivate, onOpen, onC
   }, [current, onCloseTab]);
 
   return (
-    <aside className="docpane" aria-label="Документы ответа">
+    <aside
+      ref={paneRef}
+      className={`docpane${drag ? ' docpane--drag' : ''}`}
+      style={width ? ({ '--pane-w': `${width}px` } as CSSProperties) : undefined}
+      aria-label="Документы ответа"
+    >
+      <div
+        className="docpane__grip"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Изменить ширину"
+        tabIndex={0}
+        onPointerDown={startDrag}
+        onKeyDown={onGripKey}
+        onDoubleClick={() => { setWidth(null); try { localStorage.removeItem(STORE); } catch { /* без сохранения */ } }}
+        title="Потяните, чтобы изменить ширину. Двойной щелчок — вернуть как было"
+      />
       <div className="dtabs" role="tablist">
         <button role="tab" aria-selected={active === LIST_TAB} className={`dtab dtab--list${active === LIST_TAB ? ' dtab--on' : ''}`} onClick={() => onActivate(LIST_TAB)}>
           <Icon name="list" size={16} />Список
