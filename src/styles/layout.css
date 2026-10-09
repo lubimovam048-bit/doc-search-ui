@@ -24,7 +24,6 @@
 .hstack { display: flex; flex-wrap: wrap; align-items: center; }
 .hstack--8 { gap: 8px; }
 .hstack--12 { gap: 12px; }
-.hstack--16 { gap: 16px; }
 .measure { max-width: 760px; width: 100%; }
 
 /* ---------- левое меню ---------- */
@@ -90,8 +89,6 @@
   padding: 8px 10px; background: transparent; color: var(--er-color-muted);
   transition: background-color var(--t-response), color var(--t-response);
 }
-.segmented button:hover { color: var(--er-color-text); }
-.segmented button[aria-pressed='true'] { background: var(--er-color-primary); color: #fff; }
 
 /* ---------- поле запроса ---------- */
 .search {
@@ -131,7 +128,6 @@
 .welcome__composer { width: 100%; max-width: 720px; margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
 .welcome__note { position: relative; z-index: 1; text-align: center; }
 .scope { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
-.scope__toggle { align-self: center; }
 
 @media (max-width: 900px) {
   .main, .welcome { padding: 20px 16px; }

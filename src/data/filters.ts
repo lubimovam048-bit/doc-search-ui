@@ -10,13 +10,6 @@ export const FILTER_MENUS: Record<FilterKey, { title: string; options: string[] 
 
 export const DEFAULT_FILTERS: Filters = { object: 'Все объекты', type: 'Все типы', period: 'Весь период' };
 
-export const SAVED_SCOPES: { name: string; filters: Filters }[] = [
-  { name: 'Заречная: отчёты 2026', filters: { object: 'Вокзал ст. Заречная', type: 'Отчёты', period: '2026' } },
-  { name: 'Приказы 2026, вся сеть', filters: { object: 'Все объекты', type: 'Приказы', period: '2026' } },
-  { name: 'Речная — Горный: протоколы', filters: { object: 'Участок Речная — Горный', type: 'Протоколы', period: 'Весь период' } },
-  { name: 'Методики, вся база', filters: { object: 'Все объекты', type: 'Методики', period: 'Весь период' } },
-];
-
 export function isFilterActive(filters: Filters, key: FilterKey): boolean {
   return filters[key] !== FILTER_MENUS[key].options[0];
 }
