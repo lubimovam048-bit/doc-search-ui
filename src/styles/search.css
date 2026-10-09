@@ -151,6 +151,7 @@
 .docpage__no { font-size: 11px; letter-spacing: .08em; color: #8a99ae; }
 .docpage__found { padding: 4px 12px; border-radius: 999px; background: #e8effc; color: var(--er-color-primary-hover); font-size: 13px; }
 .docpage__title { margin: 6px 0 4px; font-size: 16px; font-weight: 700; text-align: center; }
+.docpage__sec { font-weight: 700; margin-top: 6px !important; }
 .docpage mark { background: #cddcfa; color: inherit; padding: 1px 0; }
 .docpage__hint { margin-top: auto; font-family: 'Onest', sans-serif; font-size: 12px; color: #8a99ae; text-align: center; }
 @media (max-width: 1100px) {

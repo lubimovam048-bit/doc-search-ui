@@ -110,13 +110,18 @@ export function DocSheet({ source, big }: { source: Source; big: boolean }) {
       {source.kind === 'text' && (
         <>
           <h3 className="docpage__title">{source.title.toUpperCase()}</h3>
+          {source.pre?.map((t) => <p key={t}>{t}</p>)}
+          {source.section && <p className="docpage__sec">{source.section}</p>}
           <p>{source.before}</p>
           <p><mark>{source.frag}</mark></p>
           <p>{source.after}</p>
-          <span className="paper__line" /><span className="paper__line paper__line--s" /><span className="paper__line" />
+          {source.post?.map((t) => <p key={t}>{t}</p>)}
+          {!source.post && <><span className="paper__line" /><span className="paper__line paper__line--s" /><span className="paper__line" /></>}
         </>
       )}
       {source.kind === 'table' && (
+        <>
+        <h3 className="docpage__title">{source.title.toUpperCase()}</h3>
         <div className="src__table">
           <table>
             <thead><tr>{RESP_TABLE.head.map((h) => <th key={h} className="t-btn2 c2">{h}</th>)}</tr></thead>
@@ -132,6 +137,8 @@ export function DocSheet({ source, big }: { source: Source; big: boolean }) {
             </tbody>
           </table>
         </div>
+        <p>Примечание. Изменения в таблицу вносятся по согласованию с руководителем строительства.</p>
+        </>
       )}
       <span className="docpage__hint">Макет просмотра: здесь откроется оригинал документа.</span>
     </div>
