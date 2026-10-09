@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import Cite from '../components/Cite';
 import Icon from '../components/Icon';
-import SearchField from '../components/SearchField';
+import SearchField, { type SearchFieldHandle } from '../components/SearchField';
 import { useApp } from '../context/AppContext';
 import { DEFAULT_FILTERS, describeScope } from '../data/filters';
 import { FOLLOW_UPS, SCENARIOS } from '../data/scenarios';
@@ -38,6 +38,7 @@ export default function AnswerPage() {
   const [editing, setEditing] = useState(false);
   const [feedback, setFeedback] = useState('');
   const answerRef = useRef<HTMLDivElement>(null);
+  const field = useRef<SearchFieldHandle>(null);
 
   // при переходе к другому запросу раскрываем первый источник и сбрасываем оценку
   useEffect(() => {
@@ -167,7 +168,7 @@ export default function AnswerPage() {
           <ul className="related__list">
             {FOLLOW_UPS[scenario.id].map((q) => (
               <li key={q}>
-                <button className="related__item" onClick={() => navigate(`/q/${ask(q).id}`)}>
+                <button className="related__item" onClick={() => field.current?.ask(q)}>
                   <Icon name="search" size={16} />
                   <span>{q}</span>
                   <Icon name="arrow" size={16} className="related__go" />
@@ -181,7 +182,7 @@ export default function AnswerPage() {
         )}
 
         <div className="composer">
-          <SearchField onSubmit={(q) => navigate(`/q/${ask(q).id}`)} />
+          <SearchField ref={field} onSubmit={(q) => navigate(`/q/${ask(q).id}`)} />
           <span className="t-cap1 c3 composer__note">Запросы сохраняются и доступны администратору.</span>
         </div>
       </div>

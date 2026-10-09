@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SearchField from '../components/SearchField';
+import SearchField, { type SearchFieldHandle } from '../components/SearchField';
 import WelcomeBackground, { type WelcomeBackgroundHandle } from '../components/WelcomeBackground';
 import { useApp } from '../context/AppContext';
 
@@ -15,6 +15,7 @@ export default function HomePage() {
   const { ask } = useApp();
   const navigate = useNavigate();
   const bg = useRef<WelcomeBackgroundHandle>(null);
+  const field = useRef<SearchFieldHandle>(null);
   const lastInput = useRef(0);
 
   const go = (q: string) => navigate(`/q/${ask(q).id}`);
@@ -27,7 +28,7 @@ export default function HomePage() {
 
         <div className="qcards">
           {CARDS.map((q) => (
-            <button key={q} type="button" className="qcard" onClick={() => { bg.current?.pulse(false); go(q); }}>{q}</button>
+            <button key={q} type="button" className="qcard" onClick={() => { bg.current?.pulse(false); field.current?.ask(q); }}>{q}</button>
           ))}
         </div>
 
@@ -38,9 +39,8 @@ export default function HomePage() {
             if (n - lastInput.current > 420) { lastInput.current = n; bg.current?.pulse(false); }
           }}
           onFocus={() => bg.current?.pulse(false)}
-          onSubmit={() => bg.current?.pulse(true)}
         >
-          <SearchField onSubmit={go} autoFocus />
+          <SearchField ref={field} onSubmit={go} onStart={() => bg.current?.pulse(true)} autoFocus />
         </div>
       </div>
       <span className="t-cap1 c3 welcome__note">Запросы сохраняются и доступны администратору.</span>
