@@ -127,20 +127,9 @@
 /* ---------- стартовый экран ---------- */
 .welcome { position: relative; overflow: hidden; overflow: clip; /* clip: падающие осколки не делают блок прокручиваемым, фон не уезжает */
   background: #fff; flex: 999 1 520px; min-width: 0; min-height: 100vh; display: flex; flex-direction: column; padding: var(--space-8) var(--space-10) var(--space-8); }
-.welcome__tag { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; padding: 4px 12px; border: 1px solid var(--er-color-border); border-radius: var(--radius-pill); background: #fff; font-size: 13px; line-height: 20px; color: var(--er-color-muted); }
-.welcome__tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--er-color-success); }
 .welcome__title { margin: 0; font-size: 54px; line-height: 60px; letter-spacing: -0.025em; }
-.welcome__lead { margin: 14px 0 0; max-width: 520px; font-size: 17px; line-height: 26px; color: var(--er-color-muted); }
-.hints { display: flex; gap: 56px; margin-top: 34px; width: 100%; max-width: 720px; text-align: left; }
-.hint { flex: 1; display: flex; gap: 12px; }
-.hint svg { flex: none; margin-top: 2px; color: var(--er-color-muted); }
-.hint b { display: block; font-size: 14px; line-height: 20px; font-weight: 600; }
-.hint span { font-size: 13px; line-height: 19px; color: var(--er-color-muted); }
 .welcome__composer { width: 100%; max-width: 720px; margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
 .welcome__note { position: relative; z-index: 1; text-align: center; }
-.chips-unused { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: var(--space-2); max-width: 720px; }
-.chip { border: 1px solid var(--er-color-border-strong); background: var(--er-color-surface); color: var(--er-color-text); border-radius: var(--radius-pill); padding: 8px 16px; font-size: 14px; line-height: 20px; font-weight: 500; transition: background-color var(--t-response), border-color var(--t-response); }
-.chip:hover { background: var(--er-color-primary-soft); border-color: var(--er-color-primary); color: var(--er-color-primary-hover); }
 .scope { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
 .scope__toggle { align-self: center; }
 
@@ -223,9 +212,7 @@
 @media (max-width: 720px) {
   .main, .welcome { padding: var(--space-5) var(--space-4); }
   .welcome__title { font-size: 34px; line-height: 40px; }
-  .welcome__lead { font-size: 15px; line-height: 24px; }
   .welcome__composer { margin-top: var(--space-6); }
-  .hints { flex-direction: column; gap: 18px; margin-top: var(--space-6); }
   .search { padding-left: 14px; }
   .search .btn-p { padding: 11px 14px; }
   .composer { padding-top: 20px; }
