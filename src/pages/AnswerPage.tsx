@@ -64,7 +64,6 @@ export default function AnswerPage() {
     setActive(sid);
   };
   const activate = (id: string) => { setActive(id); setOpenId(id === LIST_TAB ? null : id); };
-  const closeAll = () => { setTabs([]); setActive(LIST_TAB); setOpenId(null); setHidden(false); };
   const closeTab = (sid: string) => {
     const rest = tabs.filter((x) => x !== sid);
     setTabs(rest);
@@ -196,7 +195,6 @@ export default function AnswerPage() {
           onOpen={openDoc}
           onCloseTab={closeTab}
           onHide={() => setHidden(true)}
-          onCloseAll={closeAll}
           docUrl={(sid) => `${window.location.href.split('#')[0]}#/doc/${sid}?from=${entry.id}`}
         />
       )}
