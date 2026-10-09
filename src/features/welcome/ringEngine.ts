@@ -113,6 +113,7 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
   let raf = 0;
   let bursting = false;
   let destroyed = false;
+  let introOpen = false;
   const t0 = performance.now();
 
   const layout = () => {
@@ -142,11 +143,14 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
       const kk = clamp((edge - 0.5) / 0.5, 0, 1);
       const sm = kk * kk * (3 - 2 * kk);
       c.style.opacity = (1 - sm).toFixed(3);
-      c.style.filter = sm > 0.02 ? `blur(${(2.2 * sm).toFixed(2)}px)` : '';
     });
-    const appear = ease(Math.min(1, t / 0.9));
-    ring.style.opacity = String(appear);
-    ring.style.translate = `0 ${22 * (1 - appear)}px`;
+    // после появления эти свойства больше не меняются: лишние записи в стиль каждый кадр не нужны
+    if (t < 1 || introOpen === false) {
+      const appear = ease(Math.min(1, t / 0.9));
+      ring.style.opacity = String(appear);
+      ring.style.translate = `0 ${22 * (1 - appear)}px`;
+      introOpen = appear >= 1;
+    }
   };
 
   const loop = (now: number) => {
@@ -191,18 +195,21 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
     pre.set(c, out);
     return out;
   };
-  let warm = 0;
+  // строим заготовки только для карточек, которые сейчас в кадре; по одной за раз
   const warmUp = () => {
-    if (destroyed || bursting || warm >= cards.length) return;
-    prebuild(cards[warm++]);
-    window.setTimeout(warmUp, 60);
+    if (destroyed || bursting) return;
+    const next = cards.find((c) => c.style.visibility === 'visible' && !pre.has(c));
+    if (next) prebuild(next);
+    warmTimer = window.setTimeout(warmUp, next ? 80 : 1500);
   };
-  if (!reduce) window.setTimeout(warmUp, 1500);
+  let warmTimer = 0;
+  if (!reduce) warmTimer = window.setTimeout(warmUp, 1500);
 
   const destroy = () => {
     if (destroyed) return;
     destroyed = true;
     cancelAnimationFrame(raf);
+    window.clearTimeout(warmTimer);
     ro.disconnect();
     ring.remove();
   };
@@ -210,6 +217,7 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
   const burst = () => {
     if (bursting || destroyed) return;
     bursting = true;
+    window.clearTimeout(warmTimer);
     cancelAnimationFrame(raf);
 
     if (reduce) {

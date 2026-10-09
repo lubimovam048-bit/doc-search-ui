@@ -22,7 +22,7 @@
   display: flex; flex-direction: column; align-items: center; padding: 44px 40px 34px; text-align: center;
   border: 1px solid rgba(255, 255, 255, .85); border-radius: 30px;
   background: rgba(255, 255, 255, .66);
-  -webkit-backdrop-filter: blur(16px) saturate(130%); backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
   box-shadow: 0 30px 80px rgba(36, 70, 150, .18), inset 0 1px 0 rgba(255, 255, 255, .9);
 }
 .welcome__panel .welcome__title { font-size: 50px; line-height: 56px; }
