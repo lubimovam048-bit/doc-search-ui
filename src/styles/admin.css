@@ -121,7 +121,6 @@ tr:hover .row-more, tr:focus-within .row-more { opacity: 0; }
 @media (max-width: 720px) {
   .page-head { gap: 12px; }
   .search-box { flex: 1 1 100% !important; }
-  .notice--sm { flex-wrap: wrap; gap: 10px; }
 
   /* таблица превращается в список карточек */
   .files__table .table-wrap { overflow: visible; }

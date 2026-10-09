@@ -3,7 +3,6 @@
 .answer--gap16 { gap: 16px; }
 .answer--gap20 { gap: 20px; }
 .lead { margin: 0 0 8px; }
-.item-num { flex: none; width: 28px; font-size: 20px; line-height: 26px; font-weight: 600; color: var(--er-color-subtle); }
 
 .notice {
   display: flex; gap: 12px; align-items: flex-start; padding: 16px 20px;
@@ -11,7 +10,6 @@
   border: 1px solid #f0dfbd; border-radius: var(--radius-md);
   margin-bottom: 8px;
 }
-.notice--sm { padding: 14px 18px; }
 .notice svg { flex: none; margin-top: 2px; }
 
 .fact-card { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); }
@@ -46,17 +44,7 @@
   border-left: 1px solid var(--er-color-divider);
   position: sticky; top: 0; align-self: flex-start; height: 100vh; overflow-y: auto;
 }
-.sources__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 4px; }
-.sources__list { display: flex; flex-direction: column; gap: 4px; }
 
-.src { padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid transparent; border-top: 1px solid var(--er-color-divider); transition: background-color var(--t-response); }
-.src--open { background: #f7faff; border: 1px solid #b9cdf5; }
-.src__head { width: 100%; display: flex; gap: 12px; align-items: center; background: transparent; border: 0; padding: 0; text-align: left; }
-.src__title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.src__chev { flex: none; transition: transform var(--t-switch) var(--ease); }
-.src__chev--open { transform: rotate(180deg); }
-.src__body { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; animation: rise var(--t-switch) var(--ease) backwards; }
-.src__frag { background: #fff; border: 1px solid #b9cdf5; border-radius: var(--radius-sm); padding: 14px; }
 .src__table { border: 1px solid var(--er-color-border); border-radius: var(--radius-sm); overflow-x: auto; background: var(--er-color-surface); }
 .src__table table { border-collapse: collapse; min-width: 480px; width: 100%; }
 .src__table th { text-align: left; padding: 10px 12px; background: var(--er-color-surface-hover); color: var(--er-color-muted); }
