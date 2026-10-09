@@ -232,7 +232,7 @@
 .dact:hover { border-color: var(--er-color-primary); background: #f4f7fe; }
 .dact--icon { width: 36px; padding: 0; justify-content: center; }
 .dact__wrap { position: relative; }
-.dact__menu { top: calc(100% + 6px); left: 0; width: 250px; max-width: none; gap: 2px; padding: 6px; }
+.dact__menu { top: calc(100% + 6px); right: 0; left: auto; width: 250px; max-width: none; gap: 2px; padding: 6px; }
 .dact__menu .hstack { flex-wrap: nowrap; white-space: nowrap; }
 .dact__tools { display: flex; gap: 8px; }
 .dact ~ .dact__tools { margin-left: auto; }

@@ -71,24 +71,24 @@ export function DocActions({ source, docUrl, onOpenTab }: ActionsProps) {
       {isAdmin && (
         <button className="dact" onClick={download}><Icon name="download" size={16} />Скачать</button>
       )}
-      {isAdmin && (
-        <div className="dact__wrap" ref={sendRef}>
-          <button className="dact" onClick={() => setSendOpen((v) => !v)} aria-expanded={sendOpen} aria-haspopup="menu">
-            <Icon name="send" size={16} />Отправить<Icon name="chevDown" size={14} />
-          </button>
-          {sendOpen && (
-            <div className="menu dact__menu" role="menu">
-              <button role="menuitem" className="menu__item" onClick={() => copy(docUrl, 'Ссылка скопирована')}><span className="hstack hstack--8"><Icon name="link" size={16} />Копировать ссылку</span></button>
-              <button role="menuitem" className="menu__item" onClick={mail}><span className="hstack hstack--8"><Icon name="mail" size={16} />Отправить письмом</span></button>
-            </div>
-          )}
-        </div>
+      {onOpenTab && (
+        <button className="dact" onClick={onOpenTab} title="Открыть документ в новой вкладке"><Icon name="external" size={16} />Перейти</button>
       )}
-      <button className="dact" onClick={() => copy(cite, 'Цитата скопирована')}><Icon name="copy" size={16} />Копировать цитату</button>
       <div className="dact__tools">
-        {onOpenTab && (
-          <button className="dact dact--icon" onClick={onOpenTab} aria-label="Открыть в новой вкладке" title="Открыть в новой вкладке"><Icon name="external" size={16} /></button>
+        {isAdmin && (
+          <div className="dact__wrap" ref={sendRef}>
+            <button className="dact dact--icon" onClick={() => setSendOpen((v) => !v)} aria-expanded={sendOpen} aria-haspopup="menu" aria-label="Отправить" title="Отправить">
+              <Icon name="upload" size={16} />
+            </button>
+            {sendOpen && (
+              <div className="menu dact__menu" role="menu">
+                <button role="menuitem" className="menu__item" onClick={() => copy(docUrl, 'Ссылка скопирована')}><span className="hstack hstack--8"><Icon name="link" size={16} />Копировать ссылку</span></button>
+                <button role="menuitem" className="menu__item" onClick={mail}><span className="hstack hstack--8"><Icon name="mail" size={16} />Отправить письмом</span></button>
+              </div>
+            )}
+          </div>
         )}
+        <button className="dact dact--icon" onClick={() => copy(cite, 'Цитата скопирована')} aria-label="Копировать цитату" title="Копировать цитату"><Icon name="copy" size={16} /></button>
         {isAdmin && (
           <button className="dact dact--icon" onClick={() => window.print()} aria-label="Печать" title="Печать"><Icon name="print" size={16} /></button>
         )}

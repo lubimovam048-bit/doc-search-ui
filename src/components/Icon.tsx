@@ -23,6 +23,7 @@ const PATHS = {
   mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></>,
   send: <path d="M21 3L10 14M21 3l-7 18-4-8-8-4z" />,
   quote: <><path d="M10 8H6.5A1.5 1.5 0 0 0 5 9.5V13a1.5 1.5 0 0 0 1.5 1.5H9V16a3 3 0 0 1-3 3" /><path d="M19 8h-3.5A1.5 1.5 0 0 0 14 9.5V13a1.5 1.5 0 0 0 1.5 1.5H18V16a3 3 0 0 1-3 3" /></>,
+  upload: <><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5" /><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" /></>,
   copy: <><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V6a2 2 0 0 1 2-2h9" /></>,
   print: <><path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" /><path d="M7 14h10v6H7z" /></>,
   plus: <path d="M12 5v14M5 12h14" />,
