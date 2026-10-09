@@ -150,15 +150,27 @@
 
 /* ---------- «шарик ожидания» ---------- */
 .search-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.search { width: 100%; min-height: 60px; transition: width 0.7s var(--ease), border-radius 0.7s var(--ease), padding 0.7s var(--ease), border-color var(--t-response), box-shadow var(--t-response); }
-.search__content { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; transition: opacity var(--t-switch) ease; }
-.search--thinking { width: 60px; min-height: 60px; padding: 0; border-radius: 50%; justify-content: center; }
-.search--thinking .search__content { opacity: 0; pointer-events: none; position: absolute; }
+.search {
+  width: 100%; min-height: 60px;
+  /* при разворачивании подложка проявляется чуть позже, когда поле уже выросло */
+  transition: width 0.36s var(--ease), border-radius 0.36s var(--ease), padding 0.36s var(--ease),
+    background-color 0.2s ease 0.14s, border-color 0.2s ease 0.14s, box-shadow 0.2s ease 0.14s;
+}
+.search__content { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; transition: opacity var(--t-switch) ease 0.12s; }
+/* при сворачивании подложка, рамка и тень гаснут сразу: остаётся только шарик, а не сужающийся овал */
+.search.search--thinking {
+  width: 60px; min-height: 60px; padding: 0; border-radius: 50%; justify-content: center;
+  background-color: transparent; border-color: transparent; box-shadow: none;
+  transition: width 0.36s var(--ease), border-radius 0.36s var(--ease), padding 0.36s var(--ease),
+    background-color 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+}
+.search--thinking .search__content { opacity: 0; pointer-events: none; position: absolute; transition-delay: 0s; transition-duration: 0.12s; }
 
+/* шарик всегда круглый и стоит по центру, независимо от ширины поля */
 .orb {
-  position: absolute; inset: 10px; border-radius: 50%;
+  position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%;
   opacity: 0; transform: scale(0.4);
-  transition: opacity 0.5s ease 0.25s, transform 0.7s var(--ease) 0.15s;
+  transition: opacity 0.15s ease, transform 0.2s ease;
   background: radial-gradient(circle at 35% 30%, #e8f1ff 0, #8fb2ff 24%, #3a6bea 56%, #1745bf 100%);
   box-shadow: 0 6px 18px rgba(36, 93, 223, 0.35);
 }
@@ -167,11 +179,11 @@
   background: conic-gradient(from 0deg, transparent 0 55%, rgba(255, 255, 255, 0.4) 75%, transparent 100%);
   animation: orb-spin 6s linear infinite;
 }
-.search--thinking .orb { opacity: 1; transform: scale(1); animation: orb-breathe 2.8s ease-in-out 0.9s infinite; }
+.search--thinking .orb { opacity: 1; transform: scale(1); transition: opacity 0.22s ease 0.04s, transform 0.4s var(--ease) 0.04s; animation: orb-breathe 2.8s ease-in-out 0.5s infinite; }
 @keyframes orb-breathe { 0%, 100% { transform: scale(0.94); } 50% { transform: scale(1.05); } }
 @keyframes orb-spin { to { transform: rotate(360deg); } }
 
-.search__status { min-height: 18px; opacity: 0; transition: opacity 0.4s ease 0.3s; }
+.search__status { min-height: 18px; opacity: 0; transition: opacity 0.3s ease 0.2s; }
 .search__status--on { opacity: 1; }
 
 /* ---------- поле запроса внизу страницы ответа ---------- */
