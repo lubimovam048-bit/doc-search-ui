@@ -165,7 +165,6 @@ export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptio
     const tr = opts.target?.()?.getBoundingClientRect();
     const tx = (tr ? tr.left + tr.width / 2 - hr.left : W / 2) - W / 2;
     const ty = (tr ? tr.top + tr.height / 2 - hr.top : H + 260) - cardY;
-    host.style.zIndex = '6'; // стопка и её падение видны поверх плашки
     const finishes: Promise<unknown>[] = [];
 
     // карточки в кадре, слева направо: из них складывается веер стопки
