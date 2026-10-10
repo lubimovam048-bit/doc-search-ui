@@ -1,7 +1,7 @@
 /**
  * Кольцо документов на стартовом экране.
  * Карточки стоят на цилиндре, камера в его центре: 3D-перспектива, а не плоская карусель.
- * При burst() карточки съезжаются в стопку, подпрыгивают и падают в поле поиска.
+ * При burst() карточки разлетаются в разные стороны за плашкой и гаснут.
  */
 
 export interface RingItem {
@@ -65,14 +65,7 @@ function buildPage(item: RingItem): HTMLElement {
   return page;
 }
 
-export interface RingOptions {
-  /** Элемент, в который падает стопка (поле поиска). */
-  target?: () => Element | null;
-  /** Вызывается, когда стопка достигает поля. */
-  onArrive?: () => void;
-}
-
-export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptions = {}): DocRing {
+export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ring = el('div', 'ring3d');
   host.append(ring);
@@ -160,44 +153,39 @@ export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptio
       return;
     }
 
-    // куда падает стопка: центр поля поиска в координатах кольца
-    const hr = host.getBoundingClientRect();
-    const tr = opts.target?.()?.getBoundingClientRect();
-    const tx = (tr ? tr.left + tr.width / 2 - hr.left : W / 2) - W / 2;
-    const ty = (tr ? tr.top + tr.height / 2 - hr.top : H + 260) - cardY;
     const finishes: Promise<unknown>[] = [];
+    const reach = Math.max(W, H) * 0.95; // достаточно, чтобы вылететь за край кадра
+    const rnd = (min: number, max: number) => min + Math.random() * (max - min);
 
-    // карточки в кадре, слева направо: из них складывается веер стопки
-    const live = cards
-      .map((c) => ({ c, m: /translate3d\(([-\d.]+)px,\s*0(?:px)?,\s*([-\d.]+)px\)\s*rotateY\(([-\d.]+)deg\)/.exec(c.style.transform), op: parseFloat(c.style.opacity || '1') }))
-      .filter((o) => o.c.style.visibility !== 'hidden' && o.op >= 0.05 && o.m)
-      .sort((p, q) => parseFloat(p.m![1]) - parseFloat(q.m![1]));
-    const mid = (live.length - 1) / 2;
-    const DUR = 1550;
-    const tf = (x: number, y: number, z: number, ry: number, rz: number, sc: number) =>
-      `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateY(${ry.toFixed(1)}deg) rotateZ(${rz.toFixed(2)}deg) scale(${sc.toFixed(3)})`;
+    cards.forEach((c) => {
+      if (c.style.visibility === 'hidden') return;
+      const op = parseFloat(c.style.opacity || '1');
+      if (op < 0.05) return;
+      const m = /translate3d\(([-\d.]+)px,\s*0(?:px)?,\s*([-\d.]+)px\)\s*rotateY\(([-\d.]+)deg\)/.exec(c.style.transform);
+      if (!m) return;
+      const x0 = parseFloat(m[1]), z0 = parseFloat(m[2]), a0 = parseFloat(m[3]);
 
-    live.forEach(({ c, m, op }, rank) => {
-      const x0 = parseFloat(m![1]), z0 = parseFloat(m![2]), a0 = parseFloat(m![3]);
-      const edge = Math.min(1, Math.abs(a0) / CULL);
-      // стопка: лёгкий веер, центральные карточки сверху
-      const sx = (rank - mid) * 3 * k;
-      const sy = (rank - mid) * -1.2 * k;
-      const sr = (rank - mid) * 1.1;
-      const sz = 30 * (1 - edge);
+      // своё направление у каждой: от центра в стороны, но с разбросом вверх и вниз
+      let vx = x0 / (R0 * k) * 1.6 + rnd(-0.35, 0.35);
+      if (Math.abs(vx) < 0.25) vx = (Math.random() < 0.5 ? -1 : 1) * rnd(0.25, 0.5);
+      const vy = rnd(-1, 1);
+      const len = Math.hypot(vx, vy) || 1;
+      const dist = reach * rnd(0.85, 1.25);
+      const ex = x0 + (vx / len) * dist;
+      const ey = (vy / len) * dist * 0.75;
+      const ez = z0 + rnd(180, 520) * k; // и немного на зрителя
+      const rz = (Math.random() < 0.5 ? -1 : 1) * rnd(25, 95);
+      const rx = rnd(-35, 35);
+      const ry = a0 + rnd(-40, 40);
+
       const frames: Keyframe[] = [
-        { offset: 0, transform: tf(x0, 0, z0, a0, 0, k), opacity: op, easing: 'cubic-bezier(.25,.6,.2,1)' },
-        { offset: 0.4, transform: tf(sx, sy, sz, 0, sr, k), opacity: op, easing: 'ease-in-out' },
-        { offset: 0.5, transform: tf(sx, sy + 9 * k, sz, 0, sr, k), opacity: 1, easing: 'cubic-bezier(.2,.75,.3,1)' }, // присела
-        { offset: 0.66, transform: tf(sx, sy - 34 * k, sz, 0, sr * 0.4, k * 1.02), opacity: 1, easing: 'ease-in-out' }, // подпрыгнула
-        { offset: 0.72, transform: tf(sx, sy - 36 * k, sz, 0, sr * 0.3, k * 1.02), opacity: 1, easing: 'cubic-bezier(.6,0,.9,.45)' }, // на секунду замерла
-        { offset: 0.9, opacity: 1 },
-        { offset: 1, transform: tf(tx, ty, 0, 0, 0, 0.06), opacity: 0 },
+        { offset: 0, transform: `translate3d(${x0}px,0px,${z0}px) rotateY(${a0}deg) rotateX(0deg) rotateZ(0deg) scale(${k})`, opacity: op, easing: 'cubic-bezier(.22,.6,.32,1)' },
+        { offset: 0.45, opacity: op },
+        { offset: 1, transform: `translate3d(${ex.toFixed(1)}px,${ey.toFixed(1)}px,${ez.toFixed(1)}px) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg) rotateZ(${rz.toFixed(1)}deg) scale(${k})`, opacity: 0 },
       ];
-      const a = c.animate(frames, { duration: DUR + Math.random() * 30, fill: 'both', easing: 'linear' });
+      const a = c.animate(frames, { duration: rnd(1500, 1900), delay: rnd(0, 40), fill: 'both', easing: 'linear' });
       finishes.push(a.finished);
     });
-    if (opts.onArrive) window.setTimeout(opts.onArrive, DUR * 0.86);
 
     Promise.all(finishes).then(destroy, destroy);
   };
