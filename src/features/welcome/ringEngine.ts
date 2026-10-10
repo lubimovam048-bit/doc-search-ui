@@ -1,7 +1,7 @@
 /**
  * Кольцо документов на стартовом экране.
  * Карточки стоят на цилиндре, камера в его центре: 3D-перспектива, а не плоская карусель.
- * При burst() карточки разлетаются в разные стороны за плашкой и гаснут.
+ * При burst() листы подбрасывает взрывом воздуха: они кувыркаются в 3D, замедляются, падают и гаснут.
  */
 
 export interface RingItem {
@@ -154,8 +154,9 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
     }
 
     const finishes: Promise<unknown>[] = [];
-    const reach = Math.max(W, H) * 0.95; // достаточно, чтобы вылететь за край кадра
     const rnd = (min: number, max: number) => min + Math.random() * (max - min);
+    const DT = 1 / 120; // шаг расчёта, с
+    const SAMPLES = 36; // ключевых кадров на карточку
 
     cards.forEach((c) => {
       if (c.style.visibility === 'hidden') return;
@@ -165,26 +166,52 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
       if (!m) return;
       const x0 = parseFloat(m[1]), z0 = parseFloat(m[2]), a0 = parseFloat(m[3]);
 
-      // своё направление у каждой: от центра в стороны, но с разбросом вверх и вниз
-      let vx = x0 / (R0 * k) * 1.6 + rnd(-0.35, 0.35);
-      if (Math.abs(vx) < 0.25) vx = (Math.random() < 0.5 ? -1 : 1) * rnd(0.25, 0.5);
-      const vy = rnd(-1, 1);
-      const len = Math.hypot(vx, vy) || 1;
-      const dist = reach * rnd(0.85, 1.25);
-      const ex = x0 + (vx / len) * dist;
-      const ey = (vy / len) * dist * 0.75;
-      const ez = z0 + rnd(180, 520) * k; // и немного на зрителя
-      const rz = (Math.random() < 0.5 ? -1 : 1) * rnd(25, 95);
-      const rx = rnd(-35, 35);
-      const ry = a0 + rnd(-40, 40);
+      // Взрыв воздуха под кольцом: листы подбрасывает вверх и в стороны, потом их тормозит воздух
+      // и тянет вниз. Каждый лист чуть тяжелее или легче остальных.
+      const air = rnd(1.35, 2.0); // сопротивление воздуха, 1/с
+      const T = rnd(1.9, 2.3); // длительность, с
+      const side = x0 === 0 ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(x0);
+      let vx = (side * rnd(380, 900) + (x0 / (R0 * k)) * 1100) * k;
+      let vy = -rnd(750, 1350) * k;
+      let vz = rnd(260, 620) * k; // и на зрителя
+      const g = rnd(1500, 2000) * k;
+      const sp = Math.hypot(vx, vy) || 1;
+      // ось кувырка лежит в плоскости экрана, поперёк направления полёта: лист переворачивается на лету
+      const axis = [-vy / sp, vx / sp, rnd(-0.25, 0.25)];
+      let w = (Math.random() < 0.5 ? -1 : 1) * rnd(520, 920); // град/с
+      let wz = rnd(-140, 140);
+      const airW = rnd(1.1, 1.6);
+      let px = 0, py = 0, pz = 0, th = rnd(-10, 10), ph = 0;
 
-      const frames: Keyframe[] = [
-        { offset: 0, transform: `translate3d(${x0}px,0px,${z0}px) rotateY(${a0}deg) rotateX(0deg) rotateZ(0deg) scale(${k})`, opacity: op, easing: 'cubic-bezier(.22,.6,.32,1)' },
-        { offset: 0.45, opacity: op },
-        { offset: 1, transform: `translate3d(${ex.toFixed(1)}px,${ey.toFixed(1)}px,${ez.toFixed(1)}px) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg) rotateZ(${rz.toFixed(1)}deg) scale(${k})`, opacity: 0 },
-      ];
-      const a = c.animate(frames, { duration: rnd(1500, 1900), delay: rnd(0, 40), fill: 'both', easing: 'linear' });
-      finishes.push(a.finished);
+      const frames: Keyframe[] = [];
+      const back: Keyframe[] = [];
+      const stepsPerSample = Math.max(1, Math.round(T / DT / SAMPLES));
+      for (let i = 0; i <= SAMPLES; i++) {
+        const o = i / SAMPLES;
+        const z = Math.min(z0 + pz, R0 * k * 0.62); // не подпускаем к камере вплотную
+        const tf = `translate3d(${(x0 + px).toFixed(1)}px,${py.toFixed(1)}px,${z.toFixed(1)}px) rotateY(${a0}deg) rotate3d(${axis[0].toFixed(3)},${axis[1].toFixed(3)},${axis[2].toFixed(3)},${th.toFixed(1)}deg) rotateZ(${ph.toFixed(1)}deg) scale(${k})`;
+        const fade = o < 0.55 ? op : op * Math.max(0, 1 - (o - 0.55) / 0.4);
+        frames.push({ offset: o, transform: tf, opacity: fade, easing: 'linear' });
+        back.push({ offset: o, transform: `${tf} rotateY(180deg)`, opacity: fade, easing: 'linear' });
+        for (let j = 0; j < stepsPerSample; j++) {
+          vx -= vx * air * DT; vy += g * DT; vy -= vy * air * DT; vz -= vz * air * DT;
+          px += vx * DT; py += vy * DT; pz += vz * DT;
+          w -= w * airW * DT; wz -= wz * airW * DT;
+          th += w * DT; ph += wz * DT;
+        }
+      }
+      // у листа есть обратная сторона: когда он перевернулся, видна чистая белая бумага
+      const flip = el('div', 'rc rc--back');
+      flip.style.left = c.style.left;
+      flip.style.top = c.style.top;
+      flip.style.transform = c.style.transform;
+      flip.style.opacity = '0';
+      ring.append(flip);
+
+      const delay = rnd(0, 70);
+      const dur = T * 1000;
+      finishes.push(c.animate(frames, { duration: dur, delay, fill: 'both' }).finished);
+      finishes.push(flip.animate(back, { duration: dur, delay, fill: 'both' }).finished);
     });
 
     Promise.all(finishes).then(destroy, destroy);
