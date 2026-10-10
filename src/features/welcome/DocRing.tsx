@@ -10,22 +10,6 @@ export interface DocRingHandle {
 // после первого разлёта кольцо больше не появляется, пока страницу не обновят
 let dismissed = false;
 
-let lastGlow = 0;
-/** Поле коротко вспыхивает, когда в него «падает» карточка. */
-function glow() {
-  const now = performance.now();
-  if (now - lastGlow < 110) return;
-  lastGlow = now;
-  document.querySelector('.welcome__panel .search')?.animate(
-    [
-      { boxShadow: '0 0 0 0 rgba(36,93,223,0)' },
-      { boxShadow: '0 0 0 4px rgba(36,93,223,.16), 0 0 26px rgba(36,93,223,.32)', offset: 0.35 },
-      { boxShadow: '0 0 0 0 rgba(36,93,223,0)' },
-    ],
-    { duration: 520, easing: 'ease-out' },
-  );
-}
-
 const IDS = ['s_method', 's_order', 's_resp', 's_protocol', 's_rep7', 's_letter'];
 
 function items(): RingItem[] {
@@ -55,11 +39,7 @@ const DocRing = forwardRef<DocRingHandle>(function DocRing(_, ref) {
 
   useEffect(() => {
     if (dismissed || !host.current) return;
-    ring.current = createRing(host.current, items(), {
-      target: () => document.querySelector('.welcome__panel .search'),
-      onArrive: glow,
-      mode: (window as unknown as { __ringMode?: 'funnel' | 'spiral' }).__ringMode,
-    });
+    ring.current = createRing(host.current, items());
     return () => { ring.current?.destroy(); ring.current = null; };
   }, []);
 

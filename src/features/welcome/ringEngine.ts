@@ -1,7 +1,7 @@
 /**
  * Кольцо документов на стартовом экране.
  * Карточки стоят на цилиндре, камера в его центре: 3D-перспектива, а не плоская карусель.
- * При burst() карточки по дуге втягиваются в поле поиска и гаснут.
+ * При burst() карточки опускаются вниз, запрокидываясь, и гаснут.
  */
 
 export interface RingItem {
@@ -26,6 +26,7 @@ const DESIGN_W = 1196;
 const N = 30; // карточек в кольце
 const STEP = 360 / N;
 const CULL = 50; // дальше этого угла карточки не рисуем
+const TILT = 16; // на сколько градусов карточка запрокидывается при падении
 const DRIFT = 2.6; // градусов в секунду
 const R0 = 891; // радиус цилиндра = расстояние до камеры
 
@@ -65,15 +66,7 @@ function buildPage(item: RingItem): HTMLElement {
   return page;
 }
 
-export interface RingOptions {
-  /** Элемент, в который всасываются карточки (поле поиска). */
-  target?: () => Element | null;
-  /** Вызывается, когда очередная карточка дошла до цели. */
-  onArrive?: () => void;
-  mode?: 'funnel' | 'spiral';
-}
-
-export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptions = {}): DocRing {
+export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ring = el('div', 'ring3d');
   host.append(ring);
@@ -161,14 +154,6 @@ export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptio
       return;
     }
 
-    // куда всасываются карточки: центр поля поиска в координатах кольца
-    const hr = host.getBoundingClientRect();
-    const tEl = opts.target?.();
-    const tr = tEl?.getBoundingClientRect();
-    const tx = (tr ? tr.left + tr.width / 2 - hr.left : W / 2) - W / 2;
-    const ty = (tr ? tr.top + tr.height / 2 - hr.top : H + 260) - cardY;
-    const mode = opts.mode ?? 'funnel';
-    host.style.zIndex = '6'; // на время полёта карточки поверх плашки: путь к полю должен быть виден
     const finishes: Promise<unknown>[] = [];
 
     cards.forEach((c) => {
@@ -177,42 +162,25 @@ export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptio
       if (op < 0.05) return;
       const m = /translate3d\(([-\d.]+)px,\s*0(?:px)?,\s*([-\d.]+)px\)\s*rotateY\(([-\d.]+)deg\)/.exec(c.style.transform);
       if (!m) return;
-      const x0 = parseFloat(m[1]), z0 = parseFloat(m[2]), a0 = parseFloat(m[3]);
-      const edge = Math.min(1, Math.abs(a0) / CULL);
+      const x0 = m[1], z0 = m[2], a0 = m[3];
+      const edge = Math.min(1, Math.abs(parseFloat(a0)) / CULL);
 
-      const dx = x0 - tx, dy = 0 - ty; // вектор от цели к карточке
-      const r0 = Math.hypot(dx, dy);
-      const th0 = Math.atan2(dy, dx);
-      const dir = x0 >= 0 ? 1 : -1; // закрутка в сторону своего края
-      const N = mode === 'spiral' ? 14 : 8;
+      // строго вниз с ускорением, карточка чуть запрокидывается назад и гаснет по пути
+      const fall = 340 * k;
+      const N = 8;
       const frames: Keyframe[] = [];
       for (let i = 0; i <= N; i++) {
         const o = i / N;
-        const u = Math.pow(o, 1.8); // разгон к цели
-        let px: number, py: number;
-        if (mode === 'spiral') {
-          const r = r0 * Math.pow(1 - u, 1.25);
-          const th = th0 + dir * u * Math.PI * 1.7;
-          px = tx + r * Math.cos(th);
-          py = ty + r * Math.sin(th) * 0.55 + (r0 * 0.12) * Math.sin(Math.PI * u);
-        } else {
-          // квадратичная дуга: центр управления выше прямой, как будто карточку подхватывает
-          const cxp = (x0 + tx) / 2, cyp = Math.min(0, ty) - 70 * k;
-          px = (1 - u) * (1 - u) * x0 + 2 * (1 - u) * u * cxp + u * u * tx;
-          py = (1 - u) * (1 - u) * 0 + 2 * (1 - u) * u * cyp + u * u * ty;
-        }
-        const sc = k + (0.05 - k) * Math.pow(o, 2.6); // уменьшаются ближе к концу пути
-        const rot = a0 * (1 - Math.min(1, u * 1.6));
-        const z = z0 * (1 - u);
+        const u = Math.pow(o, 2.1);
         frames.push({
-          transform: `translate3d(${px.toFixed(1)}px,${py.toFixed(1)}px,${z.toFixed(1)}px) rotateY(${rot.toFixed(1)}deg) scale(${sc.toFixed(3)})`,
-          opacity: o < 0.62 ? op : op * Math.max(0, 1 - (o - 0.62) / 0.38),
+          transform: `translate3d(${x0}px,${(fall * u).toFixed(1)}px,${z0}px) rotateY(${a0}deg) rotateX(${(TILT * u).toFixed(1)}deg) scale(${k})`,
+          opacity: op * Math.max(0, 1 - Math.pow(o, 1.15)),
           offset: o,
         });
       }
-      const delay = 100 + (1 - edge) * 420 + Math.random() * 50; // от краёв к центру
-      const a = c.animate(frames, { duration: 1250 + Math.random() * 200, delay, fill: 'both', easing: 'linear' });
-      finishes.push(a.finished.then(() => opts.onArrive?.()));
+      const delay = 90 + (1 - edge) * 260 + Math.random() * 30; // волна от краёв к центру
+      const a = c.animate(frames, { duration: 900 + Math.random() * 120, delay, fill: 'both', easing: 'linear' });
+      finishes.push(a.finished);
     });
 
     Promise.all(finishes).then(destroy, destroy);
