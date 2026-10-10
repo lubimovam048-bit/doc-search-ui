@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { RESP_TABLE, SOURCES } from '../../data/sources';
 import { createRing, type DocRing as Ring, type RingItem } from './ringEngine';
+import { playSwallowFx } from './swallowFx';
 
 export interface DocRingHandle {
   /** Документы рассыпаются и исчезают до обновления страницы. */
@@ -9,18 +10,6 @@ export interface DocRingHandle {
 
 // после первого разлёта кольцо больше не появляется, пока страницу не обновят
 let dismissed = false;
-
-/** Поле коротко вспыхивает, когда в него падает стопка. */
-function glow() {
-  document.querySelector('.welcome__panel .search')?.animate(
-    [
-      { boxShadow: '0 0 0 0 rgba(36,93,223,0)' },
-      { boxShadow: '0 0 0 4px rgba(36,93,223,.16), 0 0 26px rgba(36,93,223,.32)', offset: 0.35 },
-      { boxShadow: '0 0 0 0 rgba(36,93,223,0)' },
-    ],
-    { duration: 600, easing: 'ease-out' },
-  );
-}
 
 const IDS = ['s_method', 's_order', 's_resp', 's_protocol', 's_rep7', 's_letter'];
 
@@ -53,7 +42,7 @@ const DocRing = forwardRef<DocRingHandle>(function DocRing(_, ref) {
     if (dismissed || !host.current) return;
     ring.current = createRing(host.current, items(), {
       target: () => document.querySelector('.welcome__panel .search'),
-      onArrive: glow,
+      onStart: (tl) => playSwallowFx(tl, document.querySelector('.welcome__panel'), document.querySelector('.welcome__panel .search')),
     });
     return () => { ring.current?.destroy(); ring.current = null; };
   }, []);
