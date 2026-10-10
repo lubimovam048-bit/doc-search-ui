@@ -2,8 +2,6 @@
 .welcome__ring { position: relative; z-index: 2; flex: 1 1 0; min-height: 260px; pointer-events: none; }
 .ring3d { position: absolute; inset: 0; transform-style: preserve-3d; }
 .rc { position: absolute; width: 150px; height: 212px; margin: -106px 0 0 -75px; border-radius: 8px; background: #fff; overflow: hidden; box-shadow: 0 8px 28px rgba(36, 60, 120, .09), 0 1px 3px rgba(36, 60, 120, .06); backface-visibility: hidden; will-change: transform, opacity; color: #1f2a3d; font-family: 'Times New Roman', Georgia, serif; }
-.rc--burst { background: transparent; box-shadow: none; overflow: visible; will-change: auto; }
-.rc__shard { position: absolute; overflow: hidden; background: #fff; will-change: transform, opacity; }
 .rc__in { position: absolute; inset: 0; padding: 12px; }
 .rc__top { display: flex; justify-content: space-between; margin-bottom: 8px; font: 600 6px 'Onest', sans-serif; letter-spacing: .08em; color: #8a99ae; }
 .rc__h { margin: 0 0 6px; font: 700 8px/1.15 'Times New Roman', Georgia, serif; text-align: center; text-transform: uppercase; }

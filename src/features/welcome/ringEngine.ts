@@ -1,7 +1,7 @@
 /**
  * Кольцо документов на стартовом экране.
  * Карточки стоят на цилиндре, камера в его центре: 3D-перспектива, а не плоская карусель.
- * При burst() каждая видимая карточка разлетается осколками и растворяется.
+ * При burst() карточки по дуге втягиваются в поле поиска и гаснут.
  */
 
 export interface RingItem {
@@ -65,38 +65,15 @@ function buildPage(item: RingItem): HTMLElement {
   return page;
 }
 
-/** Разбивает прямоугольник на неровные осколки: общие вершины, чтобы края сходились. */
-function shardPolygons(): string[][] {
-  const cols = 3, rows = 3;
-  const xs = [0, 100 / 3, 200 / 3, 100];
-  const ys = [0, 100 / 3, 200 / 3, 100];
-  const jx = 9, jy = 8;
-  const v: { x: number; y: number }[][] = ys.map((y, r) => xs.map((x, c) => {
-    const edgeX = c === 0 || c === cols;
-    const edgeY = r === 0 || r === rows;
-    return {
-      x: edgeX ? x : x + (Math.random() - 0.5) * 2 * jx,
-      y: edgeY ? y : y + (Math.random() - 0.5) * 2 * jy,
-    };
-  }));
-  const pt = (p: { x: number; y: number }) => `${p.x.toFixed(1)}% ${p.y.toFixed(1)}%`;
-  const out: string[][] = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const a = v[r][c], b = v[r][c + 1], d = v[r + 1][c + 1], e = v[r + 1][c];
-      if (Math.random() < 0.4) {
-        // делим ячейку по диагонали на два треугольника
-        out.push(Math.random() < 0.5 ? [pt(a), pt(b), pt(d)] : [pt(a), pt(b), pt(e)]);
-        out.push(Math.random() < 0.5 ? [pt(a), pt(d), pt(e)] : [pt(b), pt(d), pt(e)]);
-      } else {
-        out.push([pt(a), pt(b), pt(d), pt(e)]);
-      }
-    }
-  }
-  return out;
+export interface RingOptions {
+  /** Элемент, в который всасываются карточки (поле поиска). */
+  target?: () => Element | null;
+  /** Вызывается, когда очередная карточка дошла до цели. */
+  onArrive?: () => void;
+  mode?: 'funnel' | 'spiral';
 }
 
-export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
+export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptions = {}): DocRing {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ring = el('div', 'ring3d');
   host.append(ring);
@@ -164,52 +141,10 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
   if (reduce) place(6); else raf = requestAnimationFrame(loop);
 
 
-  // заготовки осколков строим заранее, в простое: на клике остаётся только вставить их в DOM
-  type Shard = { s: HTMLElement; mx: number; my: number };
-  const pre = new Map<HTMLElement, { group: HTMLElement; shards: Shard[] }>();
-  const prebuild = (c: HTMLElement) => {
-    const inner = c.firstElementChild as HTMLElement;
-    const group = el('div', 'rc rc--burst');
-    const shards: Shard[] = [];
-    shardPolygons().forEach((poly) => {
-      // осколок занимает только свой прямоугольник: растр в разы меньше, чем у целой карточки
-      const pts = poly.map((p) => p.split(' ').map((v) => parseFloat(v)));
-      const x0 = Math.min(...pts.map((n) => n[0])), x1 = Math.max(...pts.map((n) => n[0]));
-      const y0 = Math.min(...pts.map((n) => n[1])), y1 = Math.max(...pts.map((n) => n[1]));
-      const bx = (x0 / 100) * CARD_W, by = (y0 / 100) * CARD_H;
-      const bw = ((x1 - x0) / 100) * CARD_W, bh = ((y1 - y0) / 100) * CARD_H;
-      const s = el('div', 'rc__shard');
-      s.style.cssText = `left:${bx}px;top:${by}px;width:${bw}px;height:${bh}px;`;
-      s.style.clipPath = `polygon(${pts.map((n) => `${(((n[0] - x0) / (x1 - x0 || 1)) * 100).toFixed(1)}% ${(((n[1] - y0) / (y1 - y0 || 1)) * 100).toFixed(1)}%`).join(',')})`;
-      const body = inner.cloneNode(true) as HTMLElement;
-      body.style.cssText = `position:absolute;left:${-bx}px;top:${-by}px;width:${CARD_W}px;height:${CARD_H}px;`;
-      s.append(body);
-      group.append(s);
-      shards.push({
-        s,
-        mx: pts.reduce((a, n) => a + n[0], 0) / pts.length / 100,
-        my: pts.reduce((a, n) => a + n[1], 0) / pts.length / 100,
-      });
-    });
-    const out = { group, shards };
-    pre.set(c, out);
-    return out;
-  };
-  // строим заготовки только для карточек, которые сейчас в кадре; по одной за раз
-  const warmUp = () => {
-    if (destroyed || bursting) return;
-    const next = cards.find((c) => c.style.visibility === 'visible' && !pre.has(c));
-    if (next) prebuild(next);
-    warmTimer = window.setTimeout(warmUp, next ? 80 : 1500);
-  };
-  let warmTimer = 0;
-  if (!reduce) warmTimer = window.setTimeout(warmUp, 1500);
-
   const destroy = () => {
     if (destroyed) return;
     destroyed = true;
     cancelAnimationFrame(raf);
-    window.clearTimeout(warmTimer);
     ro.disconnect();
     ring.remove();
   };
@@ -217,7 +152,6 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
   const burst = () => {
     if (bursting || destroyed) return;
     bursting = true;
-    window.clearTimeout(warmTimer);
     cancelAnimationFrame(raf);
 
     if (reduce) {
@@ -227,65 +161,59 @@ export function createRing(host: HTMLElement, items: RingItem[]): DocRing {
       return;
     }
 
-    // центр разлёта: чуть ниже центра колец, у верха плашки
-    const ox = W / 2;
-    const oy = cardY + 150 * k;
+    // куда всасываются карточки: центр поля поиска в координатах кольца
+    const hr = host.getBoundingClientRect();
+    const tEl = opts.target?.();
+    const tr = tEl?.getBoundingClientRect();
+    const tx = (tr ? tr.left + tr.width / 2 - hr.left : W / 2) - W / 2;
+    const ty = (tr ? tr.top + tr.height / 2 - hr.top : H + 260) - cardY;
+    const mode = opts.mode ?? 'funnel';
+    host.style.zIndex = '6'; // на время полёта карточки поверх плашки: путь к полю должен быть виден
     const finishes: Promise<unknown>[] = [];
-    const toRemove: HTMLElement[] = [];
 
     cards.forEach((c) => {
       if (c.style.visibility === 'hidden') return;
       const op = parseFloat(c.style.opacity || '1');
-      if (op < 0.2) return;
+      if (op < 0.05) return;
+      const m = /translate3d\(([-\d.]+)px,\s*0(?:px)?,\s*([-\d.]+)px\)\s*rotateY\(([-\d.]+)deg\)/.exec(c.style.transform);
+      if (!m) return;
+      const x0 = parseFloat(m[1]), z0 = parseFloat(m[2]), a0 = parseFloat(m[3]);
+      const edge = Math.min(1, Math.abs(a0) / CULL);
 
-      const { group, shards } = pre.get(c) ?? prebuild(c);
-      group.style.left = c.style.left;
-      group.style.top = c.style.top;
-      group.style.transform = c.style.transform;
-      group.style.opacity = c.style.opacity;
-      group.style.visibility = 'visible';
-
-      // положение карточки на экране, чтобы осколки летели от центра
-      const m = /translate3d\(([-\d.]+)px/.exec(c.style.transform);
-      const cx = W / 2 + (m ? parseFloat(m[1]) : 0);
-      const cy = cardY;
-
-      shards.forEach(({ s, mx, my }) => {
-        const sx = cx + (mx - 0.5) * CARD_W * k;
-        const sy = cy + (my - 0.5) * CARD_H * k;
-        let vx = sx - ox, vy = sy - oy;
-        const len = Math.hypot(vx, vy) || 1;
-        vx /= len; vy /= len;
-
-        // резкий толчок наружу, затем осколки падают вниз и гаснут
-        const push = (50 + Math.random() * 90) * k;
-        const px = vx * push + (Math.random() - 0.5) * 30 * k;
-        const py = vy * push * 0.6 - (10 + Math.random() * 40) * k;
-        const fx = px + (Math.random() - 0.5) * 140 * k;
-        const fy = (420 + Math.random() * 380) * k;
-        const dz = (40 + Math.random() * 240) * k;
-        const ax = Math.random() - 0.5, ay = Math.random() - 0.5, az = Math.random() - 0.5;
-        const deg = (Math.random() < 0.5 ? -1 : 1) * (60 + Math.random() * 200);
-        const delay = clamp(len / (W * 0.6), 0, 1) * 70 + Math.random() * 30;
-        const dur = 620 + Math.random() * 300;
-        const a = s.animate(
-          [
-            { transform: `perspective(${700 * k}px) translate3d(0,0,0)`, opacity: 1, easing: 'cubic-bezier(.1,.7,.2,1)' },
-            { transform: `perspective(${700 * k}px) translate3d(${px}px,${py}px,${dz * 0.4}px) rotate3d(${ax},${ay},${az},${deg * 0.35}deg)`, opacity: 1, offset: 0.2, easing: 'cubic-bezier(.45,0,.9,.6)' },
-            { opacity: 1, offset: 0.55 },
-            { transform: `perspective(${700 * k}px) translate3d(${fx}px,${fy}px,${dz}px) rotate3d(${ax},${ay},${az},${deg}deg)`, opacity: 0 },
-          ],
-          { duration: dur, delay, fill: 'both' },
-        );
-        finishes.push(a.finished);
-      });
-
-      ring.append(group);
-      toRemove.push(c);
+      const dx = x0 - tx, dy = 0 - ty; // вектор от цели к карточке
+      const r0 = Math.hypot(dx, dy);
+      const th0 = Math.atan2(dy, dx);
+      const dir = x0 >= 0 ? 1 : -1; // закрутка в сторону своего края
+      const N = mode === 'spiral' ? 14 : 8;
+      const frames: Keyframe[] = [];
+      for (let i = 0; i <= N; i++) {
+        const o = i / N;
+        const u = Math.pow(o, 1.8); // разгон к цели
+        let px: number, py: number;
+        if (mode === 'spiral') {
+          const r = r0 * Math.pow(1 - u, 1.25);
+          const th = th0 + dir * u * Math.PI * 1.7;
+          px = tx + r * Math.cos(th);
+          py = ty + r * Math.sin(th) * 0.55 + (r0 * 0.12) * Math.sin(Math.PI * u);
+        } else {
+          // квадратичная дуга: центр управления выше прямой, как будто карточку подхватывает
+          const cxp = (x0 + tx) / 2, cyp = Math.min(0, ty) - 70 * k;
+          px = (1 - u) * (1 - u) * x0 + 2 * (1 - u) * u * cxp + u * u * tx;
+          py = (1 - u) * (1 - u) * 0 + 2 * (1 - u) * u * cyp + u * u * ty;
+        }
+        const sc = k + (0.05 - k) * Math.pow(o, 2.6); // уменьшаются ближе к концу пути
+        const rot = a0 * (1 - Math.min(1, u * 1.6));
+        const z = z0 * (1 - u);
+        frames.push({
+          transform: `translate3d(${px.toFixed(1)}px,${py.toFixed(1)}px,${z.toFixed(1)}px) rotateY(${rot.toFixed(1)}deg) scale(${sc.toFixed(3)})`,
+          opacity: o < 0.62 ? op : op * Math.max(0, 1 - (o - 0.62) / 0.38),
+          offset: o,
+        });
+      }
+      const delay = 100 + (1 - edge) * 420 + Math.random() * 50; // от краёв к центру
+      const a = c.animate(frames, { duration: 1250 + Math.random() * 200, delay, fill: 'both', easing: 'linear' });
+      finishes.push(a.finished.then(() => opts.onArrive?.()));
     });
-
-    // старые карточки убираем, только когда осколки уже нарисованы: иначе на кадр-два всё мигает
-    requestAnimationFrame(() => requestAnimationFrame(() => toRemove.forEach((c) => c.remove())));
 
     Promise.all(finishes).then(destroy, destroy);
   };
