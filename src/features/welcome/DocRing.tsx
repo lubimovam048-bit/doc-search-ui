@@ -39,7 +39,9 @@ const DocRing = forwardRef<DocRingHandle>(function DocRing(_, ref) {
 
   useEffect(() => {
     if (dismissed || !host.current) return;
-    ring.current = createRing(host.current, items());
+    ring.current = createRing(host.current, items(), {
+      target: () => document.querySelector('.welcome__panel .search'),
+    });
     return () => { ring.current?.destroy(); ring.current = null; };
   }, []);
 
