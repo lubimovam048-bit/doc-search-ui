@@ -44,6 +44,3 @@
 .rs { position: absolute; left: 0; width: 150px; transform-origin: 50% 0; transform-style: preserve-3d; will-change: transform; }
 .rf { position: absolute; inset: 0; overflow: hidden; background: #fff; backface-visibility: hidden; }
 
-/* эффекты плашки, пока стопка уходит под стекло */
-.swfx { position: absolute; left: 0; right: 0; top: 0; height: 0; z-index: -1; pointer-events: none; }
-.swfx__shadow { position: absolute; left: 50%; top: -12px; width: 250px; height: 30px; margin-left: -125px; border-radius: 50%; background: radial-gradient(closest-side, rgba(24, 48, 110, .45), rgba(24, 48, 110, 0)); opacity: 0; }

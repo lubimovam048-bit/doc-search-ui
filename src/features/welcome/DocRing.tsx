@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { RESP_TABLE, SOURCES } from '../../data/sources';
 import { createRing, type DocRing as Ring, type RingItem } from './ringEngine';
-import { playSwallowFx } from './swallowFx';
 
 export interface DocRingHandle {
   /** Документы рассыпаются и исчезают до обновления страницы. */
@@ -42,7 +41,6 @@ const DocRing = forwardRef<DocRingHandle>(function DocRing(_, ref) {
     if (dismissed || !host.current) return;
     ring.current = createRing(host.current, items(), {
       target: () => document.querySelector('.welcome__panel .search'),
-      onStart: (tl) => playSwallowFx(tl, document.querySelector('.welcome__panel')),
     });
     return () => { ring.current?.destroy(); ring.current = null; };
   }, []);
