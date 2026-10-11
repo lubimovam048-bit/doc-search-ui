@@ -3,8 +3,8 @@ import Icon from '../../components/Icon';
 import { DOCUMENTS, OBJECTS } from '../../data/documents';
 import type { ClarifyScope } from '../../data/types';
 
-export const ALL_OBJECTS = 'Все объекты';
-export const ALL_PERIOD = 'Весь период';
+const ALL_OBJECTS = 'Все объекты';
+const ALL_PERIOD = 'Весь период';
 const OWN = '__own';
 
 interface Option { value: string; hint: string }

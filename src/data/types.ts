@@ -1,6 +1,6 @@
 export type Role = 'user' | 'admin';
 
-export type SourceKind = 'text' | 'table' | 'deleted';
+type SourceKind = 'text' | 'table' | 'deleted';
 
 export interface Source {
   id: string;

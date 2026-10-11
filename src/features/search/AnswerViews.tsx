@@ -3,7 +3,6 @@ import Icon from '../../components/Icon';
 
 /** Функция отрисовки сноски: знает нумерацию и какой источник сейчас раскрыт. */
 export type RenderCite = (sourceId: string, label: string) => ReactNode;
-export type PickSource = (sourceId: string) => void;
 
 /* 1. Список документов: сами документы показаны ниже, в блоке источников, с пояснением к каждому */
 export function ListAnswer() {
