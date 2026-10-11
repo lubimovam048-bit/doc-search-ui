@@ -42,7 +42,7 @@ const DocRing = forwardRef<DocRingHandle>(function DocRing(_, ref) {
     if (dismissed || !host.current) return;
     ring.current = createRing(host.current, items(), {
       target: () => document.querySelector('.welcome__panel .search'),
-      onStart: (tl) => playSwallowFx(tl, document.querySelector('.welcome__panel'), document.querySelector('.welcome__panel .search')),
+      onStart: (tl) => playSwallowFx(tl, document.querySelector('.welcome__panel')),
     });
     return () => { ring.current?.destroy(); ring.current = null; };
   }, []);
