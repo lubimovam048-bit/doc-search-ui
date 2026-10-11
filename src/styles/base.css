@@ -131,13 +131,6 @@ h1, h2, h3, p { margin: 0; }
 .menu--up { top: auto; bottom: calc(100% + 8px); }
 .menu__title { padding: 4px 8px; }
 .menu__list { display: flex; flex-direction: column; gap: 2px; max-height: 260px; overflow-y: auto; }
-.menu__input {
-  background: var(--er-color-surface);
-  border: 1px solid var(--er-color-border-strong);
-  border-radius: var(--radius-sm);
-  color: var(--er-color-text);
-  padding: 10px 12px;
-}
 .menu__item {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   text-align: left; border: 0; border-radius: var(--radius-sm);
@@ -200,11 +193,6 @@ h1, h2, h3, p { margin: 0; }
   animation: grow var(--t-appear) var(--ease) backwards;
 }
 .progress--lg { height: 8px; border-radius: 4px; }
-.progress--sm .progress__bar { background: linear-gradient(90deg, #c98a2e, #9d5e13); }
-.progress__knob {
-  position: absolute; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px;
-  border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(18, 54, 154, 0.35);
-}
 
 /* пастельные бейджи */
 

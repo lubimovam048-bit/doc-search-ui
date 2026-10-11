@@ -1,6 +1,6 @@
-export const NO_OBJECT = 'Без привязки к объекту';
+const NO_OBJECT = 'Без привязки к объекту';
 
-export type DocStatus = 'ready' | 'processing' | 'queued' | 'error';
+type DocStatus = 'ready' | 'processing' | 'queued' | 'error';
 
 export interface DocRow {
   id: string;
@@ -45,7 +45,7 @@ export const DOCUMENTS: DocRow[] = [
 ];
 
 export const OBJECTS = ['Вокзал ст. Заречная', 'Участок Речная — Горный', 'Депо Северное', 'Мост через р. Тихая', NO_OBJECT] as const;
-export const OTHER_TYPE = 'Другое';
+const OTHER_TYPE = 'Другое';
 export const DOC_TYPES = ['Приказ', 'Отчёт', 'Протокол', 'Методика', 'Таблицы и планы', OTHER_TYPE] as const;
 
 /** Подсказка системы по названию файла: объект и тип. Администратор подтверждает или правит. */

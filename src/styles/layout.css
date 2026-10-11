@@ -24,7 +24,6 @@
 .hstack { display: flex; flex-wrap: wrap; align-items: center; }
 .hstack--8 { gap: 8px; }
 .hstack--12 { gap: 12px; }
-.measure { max-width: 760px; width: 100%; }
 
 /* ---------- левое меню ---------- */
 .app { flex-direction: row; }
@@ -78,17 +77,6 @@
 .sidebar--rail .menu { left: 0; }
 .app__burger { display: none; }
 
-.segmented {
-  display: flex; gap: 4px; padding: 4px;
-  border-radius: var(--radius-pill);
-  background: var(--er-color-surface);
-  border: 1px solid var(--er-color-border-strong);
-}
-.segmented button {
-  flex: 1; border: 0; border-radius: var(--radius-pill);
-  padding: 8px 10px; background: transparent; color: var(--er-color-muted);
-  transition: background-color var(--t-response), color var(--t-response);
-}
 
 /* ---------- поле запроса ---------- */
 .search {
@@ -101,7 +89,7 @@
   box-shadow: var(--er-shadow-card);
   transition: border-color var(--t-response), box-shadow var(--t-response);
 }
-.search:focus-within { border-color: var(--er-color-primary); box-shadow: 0 0 0 3px rgba(21, 125, 204, 0.22), var(--er-shadow-card); }
+.search:focus-within { border-color: var(--er-color-primary); box-shadow: 0 0 0 3px rgba(36, 93, 223, 0.22), var(--er-shadow-card); }
 
 .search__field { position: relative; flex: 1; min-width: 0; }
 .search__input {
@@ -127,7 +115,6 @@
 .welcome__title { margin: 0; font-size: 54px; line-height: 60px; letter-spacing: -0.025em; }
 .welcome__composer { width: 100%; max-width: 720px; margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
 .welcome__note { position: relative; z-index: 1; text-align: center; }
-.scope { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
 
 @media (max-width: 900px) {
   .main, .welcome { padding: 20px 16px; }
