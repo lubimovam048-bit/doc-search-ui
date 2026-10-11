@@ -1,8 +1,8 @@
 import type { Timeline } from './ringEngine';
 
 /**
- * Эффекты вокруг падающей стопки: тень на стекле, голубой след под плашкой,
- * свечение кромки плашки и подсветка поля, которое «принимает» документы.
+ * Эффекты вокруг падающей стопки: тень на стекле, свечение кромки плашки
+ * и подсветка поля, которое «принимает» документы.
  * Все анимации идут по тем же тактам, что и стопка.
  */
 export function playSwallowFx(tl: Timeline, panel: Element | null, field: Element | null) {
@@ -10,19 +10,11 @@ export function playSwallowFx(tl: Timeline, panel: Element | null, field: Elemen
   const { total, stack, squat, apex, fall } = tl;
   const at = (ms: number) => ms / total;
 
-  const pr = panel.getBoundingClientRect();
-  const fr = field?.getBoundingClientRect();
-  // куда уходит след: центр поля относительно верхней середины плашки
-  const dx = fr ? fr.left + fr.width / 2 - (pr.left + pr.width / 2) : 0;
-  const dy = fr ? fr.top + fr.height / 2 - pr.top : 220;
-
   const box = document.createElement('div');
   box.className = 'swfx';
   const shadow = document.createElement('div');
   shadow.className = 'swfx__shadow';
-  const trail = document.createElement('div');
-  trail.className = 'swfx__trail';
-  box.append(shadow, trail);
+  box.append(shadow);
   panel.prepend(box);
 
   const done: Promise<unknown>[] = [];
@@ -42,14 +34,7 @@ export function playSwallowFx(tl: Timeline, panel: Element | null, field: Elemen
     { offset: 1, opacity: 0, transform: 'scaleX(.4)' },
   ], { duration: total, easing: 'ease-in-out', fill: 'both' });
 
-  // голубой след под стеклом: стопка уходит вглубь и тает у поля
   const fallLen = total - fall;
-  run(trail, [
-    { offset: 0, opacity: 0, transform: 'translate(0,0) scale(1)' },
-    { offset: 0.2, opacity: 0.55 },
-    { offset: 0.6, opacity: 0.7 },
-    { offset: 1, opacity: 0, transform: `translate(${dx}px,${dy}px) scale(.35)` },
-  ], { delay: fall, duration: fallLen + 180, easing: 'cubic-bezier(.55,0,.9,.5)', fill: 'both' });
 
   // кромка плашки «принимает» стопку: свет ложится вдоль верхнего края
   const rimDur = fallLen + 520;

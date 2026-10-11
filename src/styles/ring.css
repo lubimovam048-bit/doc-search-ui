@@ -47,4 +47,3 @@
 /* эффекты плашки, пока стопка уходит под стекло */
 .swfx { position: absolute; left: 0; right: 0; top: 0; height: 0; z-index: -1; pointer-events: none; }
 .swfx__shadow { position: absolute; left: 50%; top: -12px; width: 250px; height: 30px; margin-left: -125px; border-radius: 50%; background: radial-gradient(closest-side, rgba(24, 48, 110, .45), rgba(24, 48, 110, 0)); opacity: 0; }
-.swfx__trail { position: absolute; left: 50%; top: 0; width: 320px; height: 140px; margin: -70px 0 0 -160px; border-radius: 50%; background: radial-gradient(closest-side, rgba(36, 93, 223, .38), rgba(36, 93, 223, 0)); filter: blur(10px); opacity: 0; }
