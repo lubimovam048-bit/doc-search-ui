@@ -1,7 +1,7 @@
 /**
  * Кольцо документов на стартовом экране.
  * Карточки стоят на цилиндре, камера в его центре: 3D-перспектива, а не плоская карусель.
- * При burst() карточки сразу уезжают вниз за плашку: ускоряются, запрокидываются и гаснут.
+ * При burst() карточки одновременно съезжаются в стопку и уходят вниз за плашку: ускоряются и гаснут.
  * Листы гнутся (поделены на горизонтальные полосы с шарнирами) и трепещут.
  */
 
@@ -196,46 +196,57 @@ export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptio
     const ty = (tr ? tr.top + tr.height / 2 - hr.top : H + 260) - cardY;
     const finishes: Promise<unknown>[] = [];
 
-    // карточки в кадре: каждая уходит вниз со своего места
+    // карточки в кадре, слева направо: из них складывается веер стопки
     const live = cards
       .map((c) => ({ c, m: /translate3d\(([-\d.]+)px,\s*0(?:px)?,\s*([-\d.]+)px\)\s*rotateY\(([-\d.]+)deg\)/.exec(c.style.transform), op: parseFloat(c.style.opacity || '1') }))
       .filter((o) => o.c.style.visibility !== 'hidden' && o.op >= 0.05 && o.m)
       .sort((p, q) => parseFloat(p.m![1]) - parseFloat(q.m![1]));
 
-    const TOTAL = 1050; // длительность падения одного листа, мс
+    const TOTAL = 1350; // мс: листы одновременно съезжаются в стопку и уходят вниз
+    const mid = (live.length - 1) / 2;
 
     const tf = (x: number, y: number, z: number, rx: number, ry: number, rz: number, sx: number, sy: number) =>
       `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateX(${rx.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg) rotateZ(${rz.toFixed(2)}deg) scale(${sx.toFixed(3)},${sy.toFixed(3)})`;
     const rnd = (a: number, b: number) => a + Math.random() * (b - a);
 
-    interface Pose { t: number; y: number; rx: number; rz: number; sx: number; sy: number; op: number; bend: number }
+    interface Pose { t: number; x: number; y: number; z: number; rx: number; ry: number; rz: number; sx: number; sy: number; op: number; bend: number }
 
-    const fallY = ty + 140 * k; // уходят ровно вниз, под плашку
-    live.forEach(({ c, m, op }) => {
+    const fallY = ty + 140 * k; // стопка уходит ровно вниз, под плашку
+    live.forEach(({ c, m, op }, rank) => {
       const x0 = parseFloat(m![1]), z0 = parseFloat(m![2]), a0 = parseFloat(m![3]);
+      const edge = Math.min(1, Math.abs(a0) / CULL);
+      // стопка: лёгкий веер, центральные листы сверху; у каждого свой остаточный наклон
+      const sx = (rank - mid) * 3 * k;
+      const sr = (rank - mid) * 1.1 + rnd(-1.4, 1.4);
+      const sz = 30 * (1 - edge);
       const dir = Math.random() < 0.5 ? -1 : 1;
-      const delay = rnd(0, 160); // листы трогаются не разом
 
-      // падение ускоряется, лист слегка запрокидывается, трепещет и гаснет у плашки
-      const U = [0, 0.15, 0.35, 0.55, 0.75, 1];
-      const flutter = [0, 3, -5, 6, -4, 2];
-      const bends = [0, 3, 6, 8, 6, 3];
-      const opac = [op, op, 0.95, 0.8, 0.45, 0];
-      const poses: Pose[] = U.map((u, n) => ({
-        t: u * TOTAL,
-        y: fallY * Math.pow(u, 2.1),
-        rx: -dir * 10 * Math.sin(Math.min(1, u * 1.3) * Math.PI * 0.5) + dir * flutter[n],
-        rz: dir * 3 * u,
-        sx: k * (1 - 0.03 * u),
-        sy: k * (1 + 0.07 * u),
-        op: opac[n],
-        bend: bends[n],
-      }));
+      // все листы стартуют разом: съезжаются в стопку (до 60% времени), а падение ускоряется
+      const U = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1];
+      const flutter = [0, 0, 1, 2, -3, 3, 0];
+      const bends = [0, 1.5, 3, 4, 6, 7, 3];
+      const opac = [op, op, 1, 1, 0.92, 0.55, 0];
+      const poses: Pose[] = U.map((u, n) => {
+        const v = Math.min(1, u / 0.6);
+        const conv = 1 - Math.pow(1 - v, 3); // насколько уже съехались
+        return {
+          t: u * TOTAL,
+          x: x0 + (sx - x0) * conv,
+          y: fallY * Math.pow(u, 2.2),
+          z: z0 + (sz - z0) * conv,
+          rx: dir * flutter[n] * 2 - dir * 8 * Math.max(0, u - 0.4),
+          ry: a0 * (1 - conv),
+          rz: sr * conv,
+          sx: k * (1 - 0.03 * u),
+          sy: k * (1 + 0.07 * u),
+          op: opac[n],
+          bend: bends[n],
+        };
+      });
       const off = poses.map((p) => p.t / TOTAL);
-      poses.forEach((p) => { (p as Pose & { ease: string }).ease = 'linear'; });
 
       const frames: Keyframe[] = poses.map((p, n) => ({
-        offset: off[n], transform: tf(x0, p.y, z0, p.rx, a0, p.rz, p.sx, p.sy), opacity: p.op, easing: 'linear',
+        offset: off[n], transform: tf(p.x, p.y, p.z, p.rx, p.ry, p.rz, p.sx, p.sy), opacity: p.op, easing: 'linear',
       }));
 
       // лист из полос, чтобы мог гнуться; если не вышло — летит как есть
@@ -247,13 +258,13 @@ export function createRing(host: HTMLElement, items: RingItem[], opts: RingOptio
       ring.append(bendable.root);
       c.style.visibility = 'hidden';
 
-      finishes.push(bendable.root.animate(frames, { duration: TOTAL, delay, fill: 'both', easing: 'linear' }).finished);
+      finishes.push(bendable.root.animate(frames, { duration: TOTAL, fill: 'both', easing: 'linear' }).finished);
       bendable.hinges.forEach((h, j) => {
         const bf: Keyframe[] = poses.map((p, n) => ({
           offset: off[n], transform: `rotateX(${p.bend.toFixed(2)}deg)`, easing: 'ease-in-out',
         }));
         // волна: нижние полосы запаздывают, лист трепещет
-        finishes.push(h.animate(bf, { duration: TOTAL, delay: delay + j * 9, fill: 'both', easing: 'linear' }).finished);
+        finishes.push(h.animate(bf, { duration: TOTAL, delay: j * 9, fill: 'both', easing: 'linear' }).finished);
       });
     });
 
